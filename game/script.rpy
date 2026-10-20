@@ -120,6 +120,43 @@ label start:
     return
 
 label greg_story_line:
+    $ chat_messages = []
+
+    $ chat_messages.append({
+        "sender": "Greg",
+        "text": "Привет, Френк! Как жизнь?"
+    })
+
+    call screen messenger_chat(chat_messages, "Френк", "Frank")
+
+    $ chat_messages.append({
+        "sender": "Frank",
+        "text": "Здорово, Грег. Да помаленьку."
+    })
+
+    call screen messenger_chat(chat_messages, "Френк", "Frank")
+
+    $ chat_messages.append({
+        "sender": "Greg",
+        "text": "Черт! Чувак, у меня вчера был обалденный секс с Синди! Мне нужно было с кем-то этим поделиться, а ты же мой лучший друг!"
+    })
+
+    call screen messenger_chat(chat_messages, "Френк", "Frank")
+
+    $ chat_messages.append({
+        "sender": "Frank",
+        "text": "О, мужик, это круто! Самец! Рад за вас с Синди, вы кажетесь идеальной парой, наверное, так оно и есть..."
+    })
+
+    call screen messenger_chat(chat_messages, "Френк", "Frank")
+
+    $ chat_messages.append({
+        "sender": "Greg",
+        "text": "Дружище, ты как будто чем-то опечален. У тебя все в порядке? Как Нэнси?"
+    })
+
+    call screen messenger_chat(chat_messages, "Френк", "Frank")
+
     return
 
 label cindy_story_line:

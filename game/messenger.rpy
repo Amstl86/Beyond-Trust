@@ -39,7 +39,7 @@ image messenger_greg_avatar = AlphaMask(
 # ЭКРАН МЕССЕНДЖЕРА
 # ============================================================
 
-screen messenger_chat(messages):
+screen messenger_chat(messages, contact_name, contact_sender):
 
     modal True
 
@@ -75,7 +75,7 @@ screen messenger_chat(messages):
                 vbox:
                     spacing 4
 
-                    text "Грег":
+                    text contact_name:
                         size 32
                         color "#ffffff"
 
@@ -111,20 +111,30 @@ screen messenger_chat(messages):
 
                     for msg in messages:
 
-                        if msg["sender"] == "Cindy":
+                        if msg["sender"] == contact_sender:
 
                             # --------------------------------
-                            # СООБЩЕНИЕ СИНДИ — СЛЕВА
+                            # СООБЩЕНИЕ КОНТАКТА — СЛЕВА
                             # --------------------------------
 
                             hbox:
                                 xfill True
                                 spacing 10
 
-                                # Аватар Синди
-                                add "messenger_cindy_avatar":
-                                    xysize (48, 48)
-                                    yalign 0.2
+                                if contact_sender == "Cindy":
+                                    add "messenger_cindy_avatar":
+                                        xysize (48, 48)
+                                        yalign 0.2
+                                else:
+                                    frame:
+                                        xysize (48, 48)
+                                        yalign 0.2
+                                        background Solid("#103b35")
+                                        text contact_name[0]:
+                                            xalign 0.5
+                                            yalign 0.5
+                                            size 26
+                                            color "#ffffff"
 
                                 # Облачко сообщения
                                 frame:
@@ -140,7 +150,7 @@ screen messenger_chat(messages):
                         else:
 
                             # --------------------------------
-                            # СООБЩЕНИЕ СТИВА — СПРАВА
+                            # СООБЩЕНИЕ ГРЕГА — СПРАВА
                             # --------------------------------
 
                             hbox:
@@ -207,7 +217,7 @@ label messenger_test:
         "text": "Привет. Ты ещё не спишь?"
     })
 
-    call screen messenger_chat(chat_messages)
+    call screen messenger_chat(chat_messages, "Грег", "Cindy")
 
     # --------------------------------------------------------
     # СООБЩЕНИЕ 2
@@ -218,7 +228,7 @@ label messenger_test:
         "text": "Привет! Нет, как раз собирался заканчивать дела."
     })
 
-    call screen messenger_chat(chat_messages)
+    call screen messenger_chat(chat_messages, "Грег", "Cindy")
 
     # --------------------------------------------------------
     # СООБЩЕНИЕ 3
@@ -229,7 +239,7 @@ label messenger_test:
         "text": "Просто захотелось с кем-нибудь поговорить."
     })
 
-    call screen messenger_chat(chat_messages)
+    call screen messenger_chat(chat_messages, "Грег", "Cindy")
 
     # --------------------------------------------------------
     # СООБЩЕНИЕ 4 — ПРОВЕРКА ДЛИННОГО ТЕКСТА
@@ -240,7 +250,7 @@ label messenger_test:
         "text": "Конечно, можешь написать мне. Я пока не собираюсь спать. Как прошёл твой день? Всё в порядке?"
     })
 
-    call screen messenger_chat(chat_messages)
+    call screen messenger_chat(chat_messages, "Грег", "Cindy")
 
     # --------------------------------------------------------
     # ЗАВЕРШЕНИЕ ТЕСТА
