@@ -34,6 +34,24 @@ image messenger_greg_avatar = AlphaMask(
     "images/other/avatar_circle_mask.png"
 )
 
+image messenger_frank_avatar = AlphaMask(
+    "images/sprites/ava_frank.png",
+    "images/other/avatar_circle_mask.png"
+)
+
+screen nansy_look_viewer():
+
+    modal True
+
+    add Solid("#000000")
+
+    imagebutton:
+        idle "images/nansy/nansy_look.png"
+        hover "images/nansy/nansy_look.png"
+        action Return()
+        xalign 0.5
+        yalign 0.5
+
 
 # ============================================================
 # ЭКРАН МЕССЕНДЖЕРА
@@ -125,6 +143,10 @@ screen messenger_chat(messages, contact_name, contact_sender):
                                     add "messenger_cindy_avatar":
                                         xysize (48, 48)
                                         yalign 0.2
+                                elif contact_sender == "Frank":
+                                    add "messenger_frank_avatar":
+                                        xysize (48, 48)
+                                        yalign 0.2
                                 else:
                                     frame:
                                         xysize (48, 48)
@@ -143,9 +165,17 @@ screen messenger_chat(messages, contact_name, contact_sender):
                                     background Frame("images/other/chat_bubble_cindy.png", 18, 18, 18, 18)
                                     padding (16, 12)
 
-                                    text msg["text"]:
-                                        size 25
-                                        color "#ffffff"
+                                    if msg.get("image_link", False):
+                                        textbutton msg["text"]:
+                                            action Return("show_nansy_look")
+                                            text_size 25
+                                            text_color "#a8d8ff"
+                                            text_hover_color "#ffffff"
+                                            text_underline True
+                                    else:
+                                        text msg["text"]:
+                                            size 25
+                                            color "#ffffff"
 
                         else:
 
