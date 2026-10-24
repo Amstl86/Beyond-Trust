@@ -3,6 +3,7 @@
 # Определение персонажей игры.
 define Grage = Character('Грег', color="#c8ffc8")
 define Cindy = Character('Синди', color="#dcaa21")
+define MrJackson = Character('Мистер Джексон', color="#b7d7ff")
 
 # Вместо использования оператора image можете просто
 # складывать все ваши файлы изображений в папку images.
@@ -16,6 +17,9 @@ transform bg_home:
     xysize (1920, 1080)
 
 image one_hour_letter = "images/other/one_hour_letter.png"
+image next_day = "images/other/next_day.png"
+image dismissal_office = "images/office_dismissal.png"
+image mr_jackson = "images/sprites/mr_jackson.png"
 
 screen one_hour_later_wait():
     modal True
@@ -23,6 +27,26 @@ screen one_hour_later_wait():
     timer 2.0 action Return()
     key "mouseup_1" action Return()
     key "K_SPACE" action Return()
+
+screen greg_phone_video():
+    modal True
+
+    add "greg_phone_skin":
+        zoom 0.58
+        xalign 0.5
+        yalign 0.5
+
+    add Solid("#000"):
+        xpos 761
+        ypos 138
+        xsize 397
+        ysize 813
+
+    add Movie(play="videos/what_cuckold.webm", size=(397, 223), loop=False):
+        xpos 761
+        ypos 433
+
+    timer 127.0 action Return()
 
 screen story_route_choice():
     modal True
@@ -103,7 +127,7 @@ label start:
 
     Grage "— Милая, я молнией поем, затем в душ и к тебе!"
 
-    call messenger_test
+    # call messenger_test
 
     scene one_hour_later with fade
     call screen one_hour_later_wait
@@ -212,6 +236,91 @@ label greg_story_line:
     })
 
     call screen messenger_chat(chat_messages, "Френк", "Frank")
+
+    $ chat_messages.append({
+        "sender": "Frank",
+        "text": "В этом и дело! Она раньше так не наряжалась и не красилась. Даже для меня..."
+    })
+
+    call screen messenger_chat(chat_messages, "Френк", "Frank")
+
+    $ chat_messages.append({
+        "sender": "Greg",
+        "text": "Друг, я считаю ты себя накручиваешь. Нэнси просто хочет хорошо выглядеть, это свойственно каждой женщине."
+    })
+
+    call screen messenger_chat(chat_messages, "Френк", "Frank")
+
+    $ chat_messages.append({
+        "sender": "Frank",
+        "text": "Ладно... может ты и прав. Просто я не хочу ее потерять, но и куколдом быть тоже не желаю."
+    })
+
+    $ chat_messages.append({
+        "sender": "Greg",
+        "text": "Кем? Куколдом?"
+    })
+
+    $ chat_messages.append({
+        "sender": "Frank",
+        "text": "Ты не знаешь кто такие куколды? Это года жена заводит себе трахаря, а муж смиренно это терпит. Там, конечно, сложнее определение, но суть такова. Ладно мне нужно вернуться к работе, Спасибо, что выслушал."
+    })
+
+    $ chat_messages.append({
+        "sender": "Greg",
+        "text": "Удачи чувак и не переживай, все будет хорошо. Если что, я всегда готов тебя выслушать."
+    })
+
+    scene black
+    show greg_phone_skin:
+        zoom 0.58
+        xalign 0.5
+        yalign 0.5
+    with fade
+
+    Grage "Что за куколд? Может погуглить..."
+
+    Grage "Так... вот какое-то видео... глянем."
+
+    call screen greg_phone_video
+
+    Grage "Ну нет! Это слишком унизительно для мужика... Хотя женщины выглядят очень довольными."
+
+    Grage "Я никогда бы не согласился на такое унижение."
+
+    Grage "Чёрт, у меня что, стояк? Надо подумать о чём-то, чтобы остыть."
+
+    Grage "Эти женщины меня возбудили, а не то, что они делали с мужьями..."
+
+    Grage "Ладно, надо браться за работу."
+
+    scene next_day with fade
+    pause 2.0
+    scene dismissal_office with fade
+
+    Grage "Хорошо. Что происходит? Почему собраны мои вещи?"
+
+    show mr_jackson:
+        zoom 0.8
+        xalign 0.78
+        yalign 1.0
+    with dissolve
+
+    MrJackson "Грег, спасибо, что пришёл. Я сразу перейду к делу. Компания пересматривает структуру отдела."
+
+    MrJackson "Это не связано с проектом или результатами твоей работы. Мы упраздняем несколько должностей, включая твою."
+
+    Grage "Подожди. Что значит «упраздняем»? Я здесь семь лет."
+
+    MrJackson "Мы понимаем, что это неожиданно. Сегодня мы передадим тебе документы по выходному пособию, страховке и окончательному расчёту."
+
+    Grage "То есть решение уже принято?"
+
+    MrJackson "Да. Мне жаль, Грег."
+
+    Grage "И вы решили сообщить мне об этом сегодня? Без единого разговора до этого?"
+
+    MrJackson "Решение принято на уровне компании. Я не могу изменить его."
 
     return
 
