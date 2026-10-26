@@ -47,6 +47,8 @@ screen greg_phone_video():
         ypos 433
 
     timer 127.0 action Return()
+    key "mouseup_1" action Return()
+    key "K_SPACE" action Return()
 
 screen story_route_choice():
     modal True
@@ -296,13 +298,13 @@ label greg_story_line:
 
     scene next_day with fade
     pause 2.0
-    scene dismissal_office with fade
+    scene bg_work with fade
 
     Grage "Хорошо. Что происходит? Почему собраны мои вещи?"
 
-    show mr_jackson:
-        zoom 0.8
-        xalign 0.78
+    show boss:
+        zoom 1.2
+        xalign 0.88
         yalign 1.0
     with dissolve
 
@@ -321,6 +323,58 @@ label greg_story_line:
     Grage "И вы решили сообщить мне об этом сегодня? Без единого разговора до этого?"
 
     MrJackson "Решение принято на уровне компании. Я не могу изменить его."
+
+    call greg_cindy_chat
+
+    return
+
+label greg_cindy_chat:
+    $ chat_messages = []
+    $ greg_cindy_messages = [
+        {"sender": "Greg", "text": "Привет, милая. Как дела?"},
+        {"sender": "Cindy", "text": "Привет, Грег. Просто бездельничаю дома."},
+        {"sender": "Cindy", "text": "Что-то случилось?"},
+        {"sender": "Greg", "text": "Сегодня меня уволили с работы."},
+        {"sender": "Cindy", "text": "О боже! Я так сожалею, Грег. Ты в порядке?"},
+        {"sender": "Greg", "text": "Да. Просто… не ожидал такого."},
+        {"sender": "Cindy", "text": "Тебе дали выходное пособие?"},
+        {"sender": "Greg", "text": "Да. Но это не значит, что мы можем спокойно сидеть и ждать. Ипотека, счета, расходы на детей… Нужно будет быстро найти что-то новое."},
+        {"sender": "Cindy", "text": "Конечно. Мы разберёмся."},
+        {"sender": "Greg", "text": "Я разберусь."},
+        {"sender": "Cindy", "text": "Я знаю, что ты хочешь всё решить сам. Но я сказала «мы», а не «ты»."},
+        {"sender": "Greg", "text": "Я не это имел в виду."},
+        {"sender": "Cindy", "text": "Хорошо."},
+        {"sender": "Cindy", "text": "Я думаю, мне тоже стоит поискать работу."},
+        {"sender": "Greg", "text": "Зачем? Я же сказал, что буду искать."},
+        {"sender": "Cindy", "text": "Я слышала. Но поиски работы могут затянуться. А так у нас будет хотя бы ещё один источник дохода."},
+        {"sender": "Greg", "text": "Ты и так занята детьми и домом."},
+        {"sender": "Cindy", "text": "Дети ходят в школу. И я не предлагаю работать по двенадцать часов в день."},
+        {"sender": "Greg", "text": "Я не говорю, что ты не справишься."},
+        {"sender": "Cindy", "text": "Тогда в чём проблема?"},
+        {"sender": "Greg", "text": "Хорошо. Посмотрим, что можно найти."},
+        {"sender": "Cindy", "text": "Я уже кое о чём подумала."},
+        {"sender": "Cindy", "text": "Мне уже давно надоело сидеть дома одной."},
+        {"sender": "Greg", "text": "У тебя уже есть варианты на примете?"},
+        {"sender": "Cindy", "text": "Помнишь Беллу? Она как-то говорила, что может предложить мне подработку."},
+        {"sender": "Greg", "text": "Белла? Та самая Белла?"},
+        {"sender": "Cindy", "text": "Да, та самая."},
+        {"sender": "Greg", "text": "И что за работа?"},
+        {"sender": "Cindy", "text": "Вот в этом и дело. Она сказала, что платят хорошо, но толком не объяснила, чем именно нужно заниматься."},
+        {"sender": "Greg", "text": "И ты собираешься соглашаться на работу, о которой ничего не знаешь?"},
+        {"sender": "Cindy", "text": "Я собираюсь спросить. Это разные вещи."},
+        {"sender": "Greg", "text": "Она всегда была… скажем так, не самым надёжным человеком."},
+        {"sender": "Cindy", "text": "Ты никогда её не любил."},
+        {"sender": "Greg", "text": "Мне не нравится, что она постоянно что-то затевает, а потом остальные должны разбираться с последствиями."},
+        {"sender": "Cindy", "text": "Возможно. Но ты не знаешь, что она предлагает сейчас."},
+        {"sender": "Cindy", "text": "Я не собираюсь соглашаться вслепую. Сначала выясню условия, обязанности и график. Если предложение окажется странным — откажусь."},
+        {"sender": "Greg", "text": "Ладно. Только будь осторожна."},
+        {"sender": "Cindy", "text": "Я умею задавать вопросы, Грег."},
+    ]
+
+    python:
+        for message in greg_cindy_messages:
+            chat_messages.append(message)
+            renpy.call_screen("messenger_chat", chat_messages, "Синди", "Cindy")
 
     return
 

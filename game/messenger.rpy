@@ -60,6 +60,7 @@ screen nansy_look_viewer():
 screen messenger_chat(messages, contact_name, contact_sender):
 
     modal True
+    zorder 200
 
     # Фон за пределами смартфона
     add Solid("#000000")
