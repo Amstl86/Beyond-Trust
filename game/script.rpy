@@ -273,6 +273,8 @@ label greg_story_line:
         "text": "Удачи чувак и не переживай, все будет хорошо. Если что, я всегда готов тебя выслушать."
     })
 
+    $ greg_frank_messages = list(chat_messages)
+
     scene black
     show greg_phone_skin:
         zoom 0.58
@@ -326,6 +328,8 @@ label greg_story_line:
 
     call greg_cindy_chat
 
+    call greg_phone_scene
+
     return
 
 label greg_cindy_chat:
@@ -369,6 +373,10 @@ label greg_cindy_chat:
         {"sender": "Cindy", "text": "Я не собираюсь соглашаться вслепую. Сначала выясню условия, обязанности и график. Если предложение окажется странным — откажусь."},
         {"sender": "Greg", "text": "Ладно. Только будь осторожна."},
         {"sender": "Cindy", "text": "Я умею задавать вопросы, Грег."},
+        {"sender": "Cindy", "text": "В любом случае Белла сейчас в отпуске и приедет только через три недели. Может, тебе стоит спросить у Стэна насчёт работы?"},
+        {"sender": "Greg", "text": "Работать в автосервисе?"},
+        {"sender": "Cindy", "text": "В нашем положении это не худший вариант. Он твой брат и, возможно, найдёт тебе не грязную работу."},
+        {"sender": "Greg", "text": "Ты права. Я сейчас напишу ему."},
     ]
 
     python:
@@ -377,6 +385,39 @@ label greg_cindy_chat:
             renpy.call_screen("messenger_chat", chat_messages, "Синди", "Cindy")
 
     return
+
+label greg_phone_scene:
+label greg_phone_home:
+    call screen greg_phone_home_screen
+
+    if _return == "messenger":
+        jump greg_messenger_inbox
+    elif _return == "photogram":
+        call screen greg_photogram_screen
+        jump greg_phone_home
+    elif _return == "close":
+        return
+    else:
+        jump greg_phone_home
+
+label greg_messenger_inbox:
+    call screen greg_messenger_inbox_screen
+
+    if _return == "home":
+        jump greg_phone_home
+    elif _return == "Cindy":
+        call screen messenger_chat(greg_cindy_messages, "Синди", "Cindy", True)
+        jump greg_messenger_inbox
+    elif _return == "Frank":
+        call screen messenger_chat(greg_frank_messages, "Френк", "Frank", True)
+        if _return == "show_nansy_look":
+            call screen nansy_look_viewer
+        jump greg_messenger_inbox
+    elif _return == "Stan":
+        call screen messenger_chat([], "Стэн", "Stan", True)
+        jump greg_messenger_inbox
+    else:
+        jump greg_messenger_inbox
 
 label cindy_story_line:
     return

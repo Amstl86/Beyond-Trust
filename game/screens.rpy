@@ -238,7 +238,7 @@ style choice_button_text is default:
 screen quick_menu():
 
     ## Гарантирует, что оно появляется поверх других экранов.
-    zorder 100
+    zorder (250 if renpy.get_screen("messenger_chat") else 100)
 
     if quick_menu:
 
@@ -1521,7 +1521,7 @@ style pref_vbox:
 screen quick_menu():
     variant "touch"
 
-    zorder 100
+    zorder (250 if renpy.get_screen("messenger_chat") else 100)
 
     if quick_menu:
 

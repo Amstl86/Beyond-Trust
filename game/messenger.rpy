@@ -57,7 +57,7 @@ screen nansy_look_viewer():
 # ЭКРАН МЕССЕНДЖЕРА
 # ============================================================
 
-screen messenger_chat(messages, contact_name, contact_sender):
+screen messenger_chat(messages, contact_name, contact_sender, back_to_inbox=False):
 
     modal True
     zorder 200
@@ -218,16 +218,258 @@ screen messenger_chat(messages, contact_name, contact_sender):
                 background Solid("#103b35")
                 padding (12, 12)
 
-                textbutton "Продолжить  →":
+                textbutton ("Назад к чатам" if back_to_inbox else "Продолжить  →"):
                     xalign 0.5
                     yalign 0.5
-
                     text_size 25
-
-                    action Return()
+                    if back_to_inbox:
+                        action Return("inbox")
+                    else:
+                        action Return()
 
     # Пробел выполняет то же действие, что и кнопка
-    key "K_SPACE" action Return()
+    key "K_SPACE" action Return("inbox" if back_to_inbox else None)
+
+
+screen greg_phone_home_screen():
+
+    modal True
+    zorder 200
+
+    add Solid("#000000")
+
+    add Transform("images/sprites/fon.jpg", xysize=(397, 813), fit="cover"):
+        xpos 761
+        ypos 138
+
+    imagebutton:
+        idle Transform("images/icons/mf_icon.png", xysize=(62, 62))
+        hover Transform("images/icons/mf_icon.png", xysize=(62, 62))
+        focus_mask True
+        xpos 844
+        ypos 255
+        action Return("photogram")
+
+    button:
+        xpos 927
+        ypos 255
+        xysize (62, 62)
+        background None
+        hover_background Solid("#ffffff30")
+        action Return("messenger")
+
+        add Transform("images/icons/bubble.png", xysize=(62, 48)):
+            xalign 0.5
+            yalign 0.5
+
+    textbutton "Убрать телефон":
+        xpos 840
+        ypos 845
+        xsize 240
+        text_size 22
+        text_color "#ffffff"
+        action Return("close")
+
+
+screen greg_photogram_screen():
+
+    modal True
+    zorder 200
+
+    add Solid("#000000")
+
+    frame:
+        xsize 540
+        ysize 1000
+        xalign 0.5
+        yalign 0.5
+        background Solid("#34383a")
+        padding (8, 8)
+
+        vbox:
+            xfill True
+            yfill True
+            spacing 0
+
+            frame:
+                xfill True
+                ysize 100
+                background Solid("#86345f")
+                padding (20, 12)
+
+                text "Photogram":
+                    size 32
+                    color "#ffffff"
+                    yalign 0.5
+
+            null height 1 xfill True
+
+            vbox:
+                xfill True
+                yfill True
+                xalign 0.5
+                yalign 0.5
+                spacing 18
+
+                text "Приложение пока недоступно":
+                    xalign 0.5
+                    size 28
+                    color "#ffffff"
+                    text_align 0.5
+
+                text "Здесь появится продолжение позже.":
+                    xalign 0.5
+                    size 22
+                    color "#c5c5c5"
+                    text_align 0.5
+
+            frame:
+                xfill True
+                ysize 120
+                background Solid("#86345f")
+                padding (12, 12)
+
+                textbutton "На главный экран":
+                    xalign 0.5
+                    yalign 0.5
+                    text_size 25
+                    action Return()
+
+
+screen greg_messenger_inbox_screen():
+
+    modal True
+    zorder 200
+
+    add Solid("#000000")
+
+    frame:
+        xsize 540
+        ysize 1000
+        xalign 0.5
+        yalign 0.5
+        background Solid("#34383a")
+        padding (8, 8)
+
+        vbox:
+            xfill True
+            yfill True
+            spacing 0
+
+            frame:
+                xfill True
+                ysize 100
+                background Solid("#103b35")
+                padding (20, 12)
+
+                text "Сообщения":
+                    size 32
+                    color "#ffffff"
+                    yalign 0.5
+
+            vbox:
+                xfill True
+                yfill True
+                spacing 18
+
+                button:
+                    xfill True
+                    ysize 125
+                    background Solid("#45494b")
+                    hover_background Solid("#565b5d")
+                    action Return("Cindy")
+
+                    hbox:
+                        xfill True
+                        spacing 18
+                        yalign 0.5
+
+                        add "messenger_cindy_avatar":
+                            xysize (64, 64)
+                            yalign 0.5
+
+                        vbox:
+                            yalign 0.5
+                            spacing 8
+                            text "Синди":
+                                size 28
+                                color "#ffffff"
+                            text "Ты права. Я сейчас напишу ему.":
+                                size 19
+                                color "#c5c5c5"
+
+                button:
+                    xfill True
+                    ysize 125
+                    background Solid("#45494b")
+                    hover_background Solid("#565b5d")
+                    action Return("Frank")
+
+                    hbox:
+                        xfill True
+                        spacing 18
+                        yalign 0.5
+
+                        add "messenger_frank_avatar":
+                            xysize (64, 64)
+                            yalign 0.5
+
+                        vbox:
+                            yalign 0.5
+                            spacing 8
+                            text "Френк":
+                                size 28
+                                color "#ffffff"
+                            text "До скорого, друг.":
+                                size 19
+                                color "#c5c5c5"
+
+                button:
+                    xfill True
+                    ysize 125
+                    background Solid("#45494b")
+                    hover_background Solid("#565b5d")
+                    action Return("Stan")
+
+                    hbox:
+                        xfill True
+                        spacing 18
+                        yalign 0.5
+
+                        frame:
+                            xysize (64, 64)
+                            yalign 0.5
+                            background Solid("#59616b")
+
+                            text "С":
+                                xalign 0.5
+                                yalign 0.5
+                                size 32
+                                color "#ffffff"
+
+                        vbox:
+                            yalign 0.5
+                            spacing 8
+                            text "Стэн":
+                                size 28
+                                color "#ffffff"
+                            text "Нет сообщений":
+                                size 19
+                                color "#c5c5c5"
+
+            frame:
+                xfill True
+                ysize 120
+                background Solid("#103b35")
+                padding (12, 12)
+
+                textbutton "На главный экран":
+                    xalign 0.5
+                    yalign 0.5
+                    text_size 25
+                    action Return("home")
+
+    key "K_SPACE" action Return("home")
 
 
 # ============================================================
