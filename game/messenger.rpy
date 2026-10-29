@@ -250,17 +250,13 @@ screen greg_phone_home_screen():
         ypos 255
         action Return("photogram")
 
-    button:
+    imagebutton:
+        idle Transform("images/icons/bubble.png", xysize=(62, 62))
+        hover Transform("images/icons/bubble.png", xysize=(62, 62))
+        focus_mask True
         xpos 927
         ypos 255
-        xysize (62, 62)
-        background None
-        hover_background Solid("#ffffff30")
         action Return("messenger")
-
-        add Transform("images/icons/bubble.png", xysize=(62, 48)):
-            xalign 0.5
-            yalign 0.5
 
     textbutton "Убрать телефон":
         xpos 840
