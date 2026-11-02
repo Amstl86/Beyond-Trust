@@ -1,8 +1,8 @@
 default photogram_nancy_posts = [
     PhotogramPost(
         "nancy_corporate",
-        "Нэнси",
-        "images/nansy/nansy_look.png",
+        photogram_nancy_profile,
+        "images/nansy/corp.jpeg",
         "Корпоратив затянулся до позднего вечера. Иногда полезно задержаться и пообщаться с коллегами ✨",
         248,
         [
@@ -12,7 +12,7 @@ default photogram_nancy_posts = [
     ),
     PhotogramPost(
         "nancy_archive",
-        "Нэнси",
+        photogram_nancy_profile,
         "images/nansy/nansy_look.png",
         "Наконец-то выходной. Можно выдохнуть и никуда не спешить ☀️",
         192,
@@ -21,3 +21,16 @@ default photogram_nancy_posts = [
         ]
     ),
 ]
+
+default photogram_cindy_posts = [
+    PhotogramPost(
+        "cindy_interview",
+        photogram_cindy_profile,
+        "images/wife/posts/post_1.jpg",
+        "Иду на собеседование, как думаете, возьмут? 😛",
+        86,
+        []
+    ),
+]
+
+default photogram_posts = photogram_cindy_posts + photogram_nancy_posts

@@ -15,9 +15,10 @@ init python:
 
 
     class PhotogramPost:
-        def __init__(self, post_id, author, image, caption, likes, comments):
+        def __init__(self, post_id, profile, image, caption, likes, comments):
             self.post_id = post_id
-            self.author = author
+            self.profile = profile
+            self.author = profile.name
             self.image = image
             self.caption = caption
             self.likes = likes

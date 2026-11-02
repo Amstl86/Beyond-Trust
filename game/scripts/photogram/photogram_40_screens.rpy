@@ -5,6 +5,7 @@ screen greg_photogram_screen():
     default page = "feed"
     default current_post = None
     default current_story = None
+    default current_profile = photogram_nancy_profile
     default story_return_page = "feed"
     default post_return_page = "feed"
     default profile_return_page = "feed"
@@ -90,6 +91,29 @@ screen greg_photogram_screen():
                                             color "#ffffff"
                                             xalign 0.5
 
+                        if page == "explore":
+                            for profile in photogram_profiles:
+                                button:
+                                    background None
+                                    hover_background Solid("#45494b")
+                                    action [
+                                        SetScreenVariable("current_profile", profile),
+                                        SetScreenVariable("profile_return_page", "explore"),
+                                        SetScreenVariable("page", "profile"),
+                                    ]
+
+                                    vbox:
+                                        spacing 4
+                                        xalign 0.5
+
+                                        add Transform(profile.avatar, xysize=(54, 54), fit="cover"):
+                                            xalign 0.5
+
+                                        text profile.name:
+                                            size 15
+                                            color "#ffffff"
+                                            xalign 0.5
+
                 viewport:
                     xfill True
                     ysize 680
@@ -101,8 +125,8 @@ screen greg_photogram_screen():
                         xfill True
                         spacing 14
 
-                        for post in photogram_nancy_posts:
-                            if (post.post_id != "nancy_corporate" or current_day >= 2) and (page == "explore" or photogram_nancy_profile.followed):
+                        for post in photogram_posts:
+                            if (post.post_id not in ("nancy_corporate", "cindy_interview") or current_day >= 2) and (page == "explore" or post.profile.followed):
                                 frame:
                                     xfill True
                                     background Solid("#292d2f")
@@ -116,6 +140,7 @@ screen greg_photogram_screen():
                                             text_size 22
                                             text_color "#ffffff"
                                             action [
+                                                SetScreenVariable("current_profile", post.profile),
                                                 SetScreenVariable("profile_return_page", page),
                                                 SetScreenVariable("page", "profile"),
                                             ]
@@ -180,33 +205,33 @@ screen greg_photogram_screen():
                             spacing 18
                             yalign 0.5
 
-                            add Transform(photogram_nancy_profile.avatar, xysize=(100, 100), fit="cover")
+                            add Transform(current_profile.avatar, xysize=(100, 100), fit="cover")
 
                             vbox:
                                 spacing 8
 
-                                text photogram_nancy_profile.name:
+                                text current_profile.name:
                                     size 25
                                     color "#ffffff"
 
-                                text "[len(photogram_nancy_posts) - (1 if current_day < 2 else 0)] публикации":
+                                text "[len([post for post in photogram_posts if post.profile == current_profile and (post.post_id != 'cindy_interview' or current_day >= 2)])] публикации":
                                     size 17
                                     color "#c5c5c5"
 
-                                text "[photogram_nancy_profile.followers] подписчиков":
+                                text "[current_profile.followers] подписчиков":
                                     size 17
                                     color "#c5c5c5"
 
-                                textbutton ("Вы подписаны" if photogram_nancy_profile.followed else "Подписаться"):
+                                textbutton ("Вы подписаны" if current_profile.followed else "Подписаться"):
                                     text_size 18
-                                    action Function(toggle_photogram_follow, photogram_nancy_profile)
+                                    action Function(toggle_photogram_follow, current_profile)
 
-                        text photogram_nancy_profile.biography:
+                        text current_profile.biography:
                             size 18
                             color "#d7d7d7"
 
-                        for post in photogram_nancy_posts:
-                            if post.post_id != "nancy_corporate" or current_day >= 2:
+                        for post in photogram_posts:
+                            if post.profile == current_profile and (post.post_id not in ("nancy_corporate", "cindy_interview") or current_day >= 2):
                                 button:
                                     xfill True
                                     background Solid("#292d2f")
@@ -374,6 +399,7 @@ screen greg_photogram_screen():
                         text_size 17
                         text_color "#ffffff"
                         action [
+                            SetScreenVariable("current_profile", photogram_nancy_profile),
                             SetScreenVariable("profile_return_page", "feed"),
                             SetScreenVariable("page", "profile"),
                         ]
