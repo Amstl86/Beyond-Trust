@@ -4,6 +4,15 @@
 define Grage = Character('Грег', color="#c8ffc8")
 define Cindy = Character('Синди', color="#dcaa21")
 define MrJackson = Character('Мистер Джексон', color="#b7d7ff")
+define weekday_names = (
+    "понедельник",
+    "вторник",
+    "среда",
+    "четверг",
+    "пятница",
+    "суббота",
+    "воскресенье",
+)
 
 # Вместо использования оператора image можете просто
 # складывать все ваши файлы изображений в папку images.
@@ -298,7 +307,9 @@ label greg_story_line:
 
     Grage "Ладно, надо браться за работу."
 
+    $ current_weekday = weekday_names[(current_day - 1) % 7]
     scene next_day with fade
+    Grage "Сегодня [current_weekday]."
     pause 2.0
     scene bg_work with fade
 
@@ -388,10 +399,19 @@ label greg_cindy_chat:
 
 label greg_phone_scene:
 label greg_phone_home:
+    if greg_photogram_prompt_pending:
+        $ greg_photogram_prompt_pending = False
+        $ greg_photogram_prompt_shown = True
+        show screen greg_phone_home_screen
+        Grage "Я давно не заходил в Photogram. Любопытно, какие фото выложила Нэнси. Может зайти глянуть?"
+        hide screen greg_phone_home_screen
+
     call screen greg_phone_home_screen
 
     if _return == "messenger":
         jump greg_messenger_inbox
+    elif _return == "end_day":
+        jump greg_end_day
     elif _return == "photogram":
         call screen greg_photogram_screen
         jump greg_phone_home
@@ -400,21 +420,133 @@ label greg_phone_home:
     else:
         jump greg_phone_home
 
+label greg_end_day:
+    $ current_day += 1
+    $ greg_cindy_messages = []
+    $ greg_frank_messages = []
+    $ greg_stan_messages = []
+    $ greg_cindy_unread = False
+    $ greg_frank_unread = False
+    $ greg_stan_unread = False
+
+    if current_day == 2:
+        $ photogram_notification_unread = True
+
+        if not any(message.get("text") == "Доброе утро, милый! Я не стала тебя будить, ты так крепко спал))" for message in greg_cindy_messages):
+            $ greg_cindy_messages.extend([
+                {"sender": "Cindy", "text": "Доброе утро, милый! Я не стала тебя будить, ты так крепко спал))"},
+                {"sender": "Greg", "text": "Привет, любимая! А где ты?"},
+                {"sender": "Cindy", "text": "Я пошла на собеседование, возможно у меня скоро будет работа)"},
+                {"sender": "Greg", "text": "Только не говори, что ты идешь к Белле... ты говорила ее еще долго не будет в городе."},
+                {"sender": "Cindy", "text": "Нет) Я написала Рику и он предложил мне работу у него в компании)"},
+            ])
+            $ greg_cindy_unread = True
+
+        if not any(message.get("text") == "Какой Рик?" for message in greg_cindy_messages):
+            $ greg_cindy_messages.extend([
+                {"sender": "Greg", "text": "Какой Рик?"},
+                {"sender": "Cindy", "text": "Дорогой, я знаю тебе это не очень понравится, но нам же нужно платить за счета. Это Рик Саливан."},
+                {"sender": "Greg", "text": "Твой бывший? Синди, ты права, мне это совсем не нравится..."},
+                {"sender": "Cindy", "text": "Любимый тебе нечего переживать, мы с Риком остались друзьями, никаких других чувств между нами не осталось, Ты моя любовь всей жизни!))"},
+                {"sender": "Cindy", "text": "Лучше скажи, как тебе мой наряд?)"},
+            ])
+            $ greg_cindy_unread = True
+
+        if not any(message.get("text") == "wife_look.jpg" for message in greg_cindy_messages):
+            $ greg_cindy_messages.append({
+                "sender": "Cindy",
+                "text": "wife_look.jpg",
+                "image_link": True,
+                "image_action": "show_wife_look"
+            })
+            $ greg_cindy_unread = True
+
+        if not any(message.get("text") == "Вау! Детка, ты прекрасна!" for message in greg_cindy_messages):
+            $ greg_cindy_messages.extend([
+                {"sender": "Greg", "text": "Вау! Детка, ты прекрасна!"},
+                {"sender": "Cindy", "text": "Спасибо 💓"},
+                {"sender": "Greg", "text": "Но... не слишком короткое платье для собеседования?"},
+                {"sender": "Cindy", "text": "Милый, не будь абьюзером 😂"},
+                {"sender": "Cindy", "text": "Это обычное летнее платье. Ладно мне уже надо идти, люблю тебя 💋"},
+                {"sender": "Greg", "text": "Удачи тебе на собеседовании! Я тоже тебя люблю!"},
+            ])
+            $ greg_cindy_unread = True
+
+        if not any(message.get("text") == "Привет, Грег. Спасибо за вчерашний разговор. Надеюсь, у вас с Синди всё получится." for message in greg_frank_messages):
+            $ greg_frank_messages.extend([
+                {"sender": "Frank", "text": "Привет, Грег. Спасибо за вчерашний разговор. Надеюсь, у вас с Синди всё получится."},
+                {"sender": "Frank", "text": "Чувак, привет! Это пиздец!"},
+                {"sender": "Greg", "text": "Привет! Что случилось, Фрэнк?"},
+                {"sender": "Frank", "text": "Нэнси, сука! Она точно мне изменяет!"},
+                {"sender": "Greg", "text": "Чувак, тебе надо успокоиться и рассказать, в чём дело. Как ты понял, что она тебе изменяет?"},
+                {"sender": "Frank", "text": "Вчера она сказала, что пошла на корпоратив. Вернулась только под утро. Я заглянул в её профиль в Photogram. Ночью она выложила фото: она одета там как шлюха, а рядом сидит её босс. Наверняка она с ним трахается."},
+                {"sender": "Greg", "text": "Фрэнк, а другие доказательства у тебя есть?"},
+            ])
+            $ greg_frank_unread = True
+
+        if not any(message.get("text") == "Найти доказательства, что Нэнси изменяет мне." for message in greg_frank_messages):
+            $ greg_frank_messages.extend([
+                {"sender": "Frank", "text": "Ну... разве этого мало?"},
+                {"sender": "Greg", "text": "Я не вижу здесь измены. Для этого нужны более веские основания."},
+                {"sender": "Frank", "text": "Может, ты и прав... Слушай, ты мне сможешь с этим помочь?"},
+                {"sender": "Greg", "text": "С чем?"},
+                {"sender": "Frank", "text": "Найти доказательства, что Нэнси изменяет мне."},
+                {"sender": "Frank", "prompt": "Помочь Фрэнку?", "choice": True},
+            ])
+            $ greg_frank_unread = True
+
+        if not greg_stan_messages:
+            $ greg_stan_messages.extend([
+                {"sender": "Greg", "text": "Привет, Стэн!"},
+                {"sender": "Stan", "text": "Здорово, Грэг! Как Жизнь?"},
+                {"sender": "Greg", "text": "На самом деле не очень..."},
+                {"sender": "Stan", "text": "В чем проблема? Синди тебя бросила?"},
+                {"sender": "Greg", "text": "Нет, как можно бросить такого красавчика, как я?😁"},
+                {"sender": "Stan", "text": "Ну мало ли, что-то не поделили или она нашла другого красавчика😁 Она у тебя горячая, от поклонников должно быть отбоя нет😏"},
+                {"sender": "Greg", "text": "У нас с Синди всё отлично. Проблема в том, что меня сократили на работе."},
+                {"sender": "Greg", "text": "Я подумал, может у тебя есть какая-то вакансия для меня?"},
+                {"sender": "Stan", "text": "Грег, ты как раз вовремя, у меня тут с документами полный беспорядок и мне нужен человек, кто в этом разбирается."},
+                {"sender": "Greg", "text": "Думаю я с этим могу помочь."},
+                {"sender": "Stan", "text": "Тогда ты нанят, Грег!😄 Можешь приступить уже сегодня?"},
+                {"sender": "Greg", "text": "Спасибо, Стэн! Да, я сейчас приеду. До встречи."},
+            ])
+            $ greg_stan_unread = True
+
+        $ day_two_messages_sent = True
+
+    $ current_weekday = weekday_names[(current_day - 1) % 7]
+    scene next_day with fade
+    Grage "Сегодня [current_weekday]."
+    pause 2.0
+    jump greg_phone_home
+
 label greg_messenger_inbox:
     call screen greg_messenger_inbox_screen
 
     if _return == "home":
         jump greg_phone_home
     elif _return == "Cindy":
+        $ greg_cindy_unread = False
         call screen messenger_chat(greg_cindy_messages, "Синди", "Cindy", True)
+        $ greg_cindy_read = True
+        if isinstance(_return, tuple) and _return[0] == "show_wife_look":
+            $ image_message_index = _return[1]
+            call screen wife_look_viewer
+            call screen messenger_chat(greg_cindy_messages, "Синди", "Cindy", True, image_message_index)
         jump greg_messenger_inbox
     elif _return == "Frank":
+        $ greg_frank_unread = False
         call screen messenger_chat(greg_frank_messages, "Френк", "Frank", True)
-        if _return == "show_nansy_look":
+        if isinstance(_return, tuple) and _return[0] == "show_nansy_look":
+            $ image_message_index = _return[1]
             call screen nansy_look_viewer
+            call screen messenger_chat(greg_frank_messages, "Френк", "Frank", True, image_message_index)
+        if current_day == 2 and not greg_photogram_prompt_shown:
+            $ greg_photogram_prompt_pending = True
         jump greg_messenger_inbox
-    elif _return == "Stan":
-        call screen messenger_chat([], "Стэн", "Stan", True)
+    elif _return == "Stan" and greg_cindy_read:
+        $ greg_stan_unread = False
+        call screen messenger_chat(greg_stan_messages, "Стэн", "Stan", True)
         jump greg_messenger_inbox
     else:
         jump greg_messenger_inbox

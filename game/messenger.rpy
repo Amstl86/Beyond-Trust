@@ -8,6 +8,40 @@
 
 # История сообщений
 default chat_messages = []
+default greg_cindy_messages = []
+default greg_frank_messages = []
+default greg_stan_messages = []
+default greg_cindy_unread = False
+default greg_frank_unread = False
+default greg_stan_unread = False
+default greg_cindy_read = False
+default greg_photogram_prompt_pending = False
+default greg_photogram_prompt_shown = False
+default current_day = 1
+default day_two_messages_sent = False
+
+init python:
+    def scroll_chat_to_bottom(adjustment):
+        adjustment.change(adjustment.range)
+
+    def resolve_frank_help_choice(messages, message_index, should_help):
+        choice_message = messages[message_index]
+        choice_message["sender"] = "Greg"
+        choice_message["text"] = "Да" if should_help else "Нет"
+        choice_message["choice"] = False
+
+        if should_help:
+            messages.extend([
+                {"sender": "Frank", "text": "Спасибо, друг! Сегодня я всё обдумаю и составлю план действий, а завтра поведаю его тебе."},
+                {"sender": "Greg", "text": "Хорошо, до завтра!"},
+            ])
+        else:
+            messages.extend([
+                {"sender": "Greg", "text": "Друг, мне кажется, ты себя накручиваешь. Нэнси порядочная девушка, она любит тебя, а для корпоратива все одеваются красиво — это же как Новый год!"},
+                {"sender": "Frank", "text": "Ты правда так думаешь? На самом деле она пришла весёлая, обнимала и целовала меня, а потом даже подрочила мне!"},
+                {"sender": "Greg", "text": "Вот видишь, тебе не о чем переживать!"},
+                {"sender": "Frank", "text": "Спасибо, Грег, ты меня успокоил! Увидимся!"},
+            ])
 
 
 # ============================================================
@@ -39,6 +73,11 @@ image messenger_frank_avatar = AlphaMask(
     "images/other/avatar_circle_mask.png"
 )
 
+image messenger_stan_avatar = AlphaMask(
+    "images/sprites/ava_stan.png",
+    "images/other/avatar_circle_mask.png"
+)
+
 screen nansy_look_viewer():
 
     modal True
@@ -53,14 +92,36 @@ screen nansy_look_viewer():
         yalign 0.5
 
 
+screen wife_look_viewer():
+
+    modal True
+
+    add Solid("#000000")
+
+    imagebutton:
+        idle "images/wife/wife_look.jpg"
+        hover "images/wife/wife_look.jpg"
+        action Return()
+        xalign 0.5
+        yalign 0.5
+
+
 # ============================================================
 # ЭКРАН МЕССЕНДЖЕРА
 # ============================================================
 
-screen messenger_chat(messages, contact_name, contact_sender, back_to_inbox=False):
+screen messenger_chat(messages, contact_name, contact_sender, back_to_inbox=False, initial_message_index=0):
 
     modal True
     zorder 200
+    default message_index = initial_message_index
+    default last_scrolled_index = 0
+    default chat_yadjustment = ui.adjustment()
+    $ waiting_for_choice = (
+        back_to_inbox
+        and message_index < len(messages)
+        and messages[message_index].get("choice", False)
+    )
 
     # Фон за пределами смартфона
     add Solid("#000000")
@@ -114,6 +175,7 @@ screen messenger_chat(messages, contact_name, contact_sender, back_to_inbox=Fals
 
                 # Начинаем просмотр с последнего сообщения
                 yinitial 1.0
+                yadjustment chat_yadjustment
 
                 # Прокрутка колёсиком мыши
                 mousewheel True
@@ -128,9 +190,43 @@ screen messenger_chat(messages, contact_name, contact_sender, back_to_inbox=Fals
                     xfill True
                     spacing 18
 
-                    for msg in messages:
+                    for msg in (messages[:message_index + 1] if back_to_inbox else messages):
+                        if msg.get("choice", False):
 
-                        if msg["sender"] == contact_sender:
+                            frame:
+                                xalign 0.5
+                                xmaximum 420
+                                background Solid("#45494b")
+                                padding (18, 14)
+
+                                vbox:
+                                    xfill True
+                                    spacing 12
+
+                                    text msg["prompt"]:
+                                        xalign 0.5
+                                        size 25
+                                        color "#ffffff"
+
+                                    hbox:
+                                        xalign 0.5
+                                        spacing 24
+
+                                        textbutton "Да":
+                                            text_size 23
+                                            action [
+                                                Function(resolve_frank_help_choice, messages, message_index, True),
+                                                SetScreenVariable("message_index", message_index + 1)
+                                            ]
+
+                                        textbutton "Нет":
+                                            text_size 23
+                                            action [
+                                                Function(resolve_frank_help_choice, messages, message_index, False),
+                                                SetScreenVariable("message_index", message_index + 1)
+                                            ]
+
+                        elif msg["sender"] == contact_sender:
 
                             # --------------------------------
                             # СООБЩЕНИЕ КОНТАКТА — СЛЕВА
@@ -146,6 +242,10 @@ screen messenger_chat(messages, contact_name, contact_sender, back_to_inbox=Fals
                                         yalign 0.2
                                 elif contact_sender == "Frank":
                                     add "messenger_frank_avatar":
+                                        xysize (48, 48)
+                                        yalign 0.2
+                                elif contact_sender == "Stan":
+                                    add "messenger_stan_avatar":
                                         xysize (48, 48)
                                         yalign 0.2
                                 else:
@@ -168,7 +268,11 @@ screen messenger_chat(messages, contact_name, contact_sender, back_to_inbox=Fals
 
                                     if msg.get("image_link", False):
                                         textbutton msg["text"]:
-                                            action Return("show_nansy_look")
+                                            action If(
+                                                back_to_inbox,
+                                                Return((msg.get("image_action", "show_nansy_look"), message_index)),
+                                                Return(msg.get("image_action", "show_nansy_look"))
+                                            )
                                             text_size 25
                                             text_color "#a8d8ff"
                                             text_hover_color "#ffffff"
@@ -218,23 +322,45 @@ screen messenger_chat(messages, contact_name, contact_sender, back_to_inbox=Fals
                 background Solid("#103b35")
                 padding (12, 12)
 
-                textbutton ("Назад к чатам" if back_to_inbox else "Продолжить  →"):
+                textbutton (
+                    "Следующее сообщение  →"
+                    if back_to_inbox and message_index < len(messages) - 1
+                    else "Назад к чатам"
+                    if back_to_inbox
+                    else "Продолжить  →"
+                ):
                     xalign 0.5
                     yalign 0.5
                     text_size 25
-                    if back_to_inbox:
-                        action Return("inbox")
-                    else:
-                        action Return()
+                    sensitive not waiting_for_choice
+                    action If(
+                        back_to_inbox and message_index < len(messages) - 1,
+                        SetScreenVariable("message_index", message_index + 1),
+                        Return("inbox") if back_to_inbox else Return()
+                    )
 
-    # Пробел выполняет то же действие, что и кнопка
-    key "K_SPACE" action Return("inbox" if back_to_inbox else None)
+    if back_to_inbox and last_scrolled_index != message_index:
+        timer 0.01 action [
+            Function(scroll_chat_to_bottom, chat_yadjustment),
+            SetScreenVariable("last_scrolled_index", message_index)
+        ]
+
+    key "K_SPACE" action If(
+        waiting_for_choice,
+        NullAction(),
+        If(
+            back_to_inbox and message_index < len(messages) - 1,
+            SetScreenVariable("message_index", message_index + 1),
+            Return("inbox") if back_to_inbox else Return()
+        )
+    )
+    key "K_ESCAPE" action Return("inbox" if back_to_inbox else None)
 
 
 screen greg_phone_home_screen():
 
     modal True
-    zorder 200
+    zorder 0
 
     add Solid("#000000")
 
@@ -251,12 +377,30 @@ screen greg_phone_home_screen():
         action Return("photogram")
 
     imagebutton:
-        idle Transform("images/icons/bubble.png", xysize=(62, 62))
-        hover Transform("images/icons/bubble.png", xysize=(62, 62))
+        idle Transform(
+            "images/icons/new_messedge.png"
+            if greg_cindy_unread or greg_frank_unread or greg_stan_unread or photogram_notification_unread
+            else "images/icons/bubble.png",
+            xysize=(62, 62)
+        )
+        hover Transform(
+            "images/icons/new_messedge.png"
+            if greg_cindy_unread or greg_frank_unread or greg_stan_unread or photogram_notification_unread
+            else "images/icons/bubble.png",
+            xysize=(62, 62)
+        )
         focus_mask True
         xpos 927
         ypos 255
         action Return("messenger")
+
+    textbutton "Закончить день":
+        xpos 840
+        ypos 890
+        xsize 240
+        text_size 22
+        text_color "#ffffff"
+        action Return("end_day")
 
     textbutton "Убрать телефон":
         xpos 840
@@ -266,70 +410,7 @@ screen greg_phone_home_screen():
         text_color "#ffffff"
         action Return("close")
 
-
-screen greg_photogram_screen():
-
-    modal True
-    zorder 200
-
-    add Solid("#000000")
-
-    frame:
-        xsize 540
-        ysize 1000
-        xalign 0.5
-        yalign 0.5
-        background Solid("#34383a")
-        padding (8, 8)
-
-        vbox:
-            xfill True
-            yfill True
-            spacing 0
-
-            frame:
-                xfill True
-                ysize 100
-                background Solid("#86345f")
-                padding (20, 12)
-
-                text "Photogram":
-                    size 32
-                    color "#ffffff"
-                    yalign 0.5
-
-            null height 1 xfill True
-
-            vbox:
-                xfill True
-                yfill True
-                xalign 0.5
-                yalign 0.5
-                spacing 18
-
-                text "Приложение пока недоступно":
-                    xalign 0.5
-                    size 28
-                    color "#ffffff"
-                    text_align 0.5
-
-                text "Здесь появится продолжение позже.":
-                    xalign 0.5
-                    size 22
-                    color "#c5c5c5"
-                    text_align 0.5
-
-            frame:
-                xfill True
-                ysize 120
-                background Solid("#86345f")
-                padding (12, 12)
-
-                textbutton "На главный экран":
-                    xalign 0.5
-                    yalign 0.5
-                    text_size 25
-                    action Return()
+    key "K_ESCAPE" action Return("close")
 
 
 screen greg_messenger_inbox_screen():
@@ -365,14 +446,14 @@ screen greg_messenger_inbox_screen():
 
             vbox:
                 xfill True
-                yfill True
-                spacing 18
+                yfill False
+                spacing 0
 
                 button:
                     xfill True
-                    ysize 125
-                    background Solid("#45494b")
-                    hover_background Solid("#565b5d")
+                    ysize 64
+                    background Solid("#216b4a" if greg_cindy_unread else "#45494b")
+                    hover_background Solid("#2d805a" if greg_cindy_unread else "#565b5d")
                     action Return("Cindy")
 
                     hbox:
@@ -386,19 +467,15 @@ screen greg_messenger_inbox_screen():
 
                         vbox:
                             yalign 0.5
-                            spacing 8
                             text "Синди":
                                 size 28
                                 color "#ffffff"
-                            text "Ты права. Я сейчас напишу ему.":
-                                size 19
-                                color "#c5c5c5"
 
                 button:
                     xfill True
-                    ysize 125
-                    background Solid("#45494b")
-                    hover_background Solid("#565b5d")
+                    ysize 64
+                    background Solid("#216b4a" if greg_frank_unread else "#45494b")
+                    hover_background Solid("#2d805a" if greg_frank_unread else "#565b5d")
                     action Return("Frank")
 
                     hbox:
@@ -412,19 +489,16 @@ screen greg_messenger_inbox_screen():
 
                         vbox:
                             yalign 0.5
-                            spacing 8
                             text "Френк":
                                 size 28
                                 color "#ffffff"
-                            text "До скорого, друг.":
-                                size 19
-                                color "#c5c5c5"
 
                 button:
                     xfill True
-                    ysize 125
-                    background Solid("#45494b")
-                    hover_background Solid("#565b5d")
+                    ysize 64
+                    sensitive greg_cindy_read
+                    background Solid("#216b4a" if greg_stan_unread and greg_cindy_read else "#45494b")
+                    hover_background Solid("#2d805a" if greg_stan_unread and greg_cindy_read else "#565b5d")
                     action Return("Stan")
 
                     hbox:
@@ -432,26 +506,21 @@ screen greg_messenger_inbox_screen():
                         spacing 18
                         yalign 0.5
 
-                        frame:
+                        add "messenger_stan_avatar":
                             xysize (64, 64)
                             yalign 0.5
-                            background Solid("#59616b")
-
-                            text "С":
-                                xalign 0.5
-                                yalign 0.5
-                                size 32
-                                color "#ffffff"
 
                         vbox:
                             yalign 0.5
-                            spacing 8
                             text "Стэн":
                                 size 28
                                 color "#ffffff"
-                            text "Нет сообщений":
-                                size 19
-                                color "#c5c5c5"
+                            if not greg_cindy_read:
+                                text "Сначала прочитайте чат Синди":
+                                    size 12
+                                    color "#b8b8b8"
+
+            null height 1 yfill True
 
             frame:
                 xfill True
@@ -466,6 +535,7 @@ screen greg_messenger_inbox_screen():
                     action Return("home")
 
     key "K_SPACE" action Return("home")
+    key "K_ESCAPE" action Return("home")
 
 
 # ============================================================
