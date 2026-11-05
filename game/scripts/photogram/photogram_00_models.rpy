@@ -54,3 +54,43 @@ init python:
             "NightOwl",
             "Sergey",
         ])
+
+
+    def ensure_photogram_cindy_workday_post():
+        post = next(
+            (post for post in photogram_cindy_posts if post.post_id == "cindy_workday"),
+            None
+        )
+        created = post is None
+
+        if post is None:
+            post = PhotogramPost(
+                "cindy_workday",
+                photogram_cindy_profile,
+                "images/wife/posts/w_photogram_1.jpg",
+                "На работе я отдаюсь на 100%",
+                0,
+                [
+                    PhotogramComment(
+                        random_photogram_comment_author(),
+                        "Отдайся мне!",
+                        photogram_cindy_profile.name
+                    ),
+                    PhotogramComment(
+                        random_photogram_comment_author(),
+                        "Представляю, как ты под столом работаешь",
+                        photogram_cindy_profile.name
+                    ),
+                    PhotogramComment(
+                        random_photogram_comment_author(),
+                        "Я бы заполнил твой рот на 100%",
+                        photogram_cindy_profile.name
+                    ),
+                ]
+            )
+            photogram_cindy_posts.append(post)
+
+        if not any(existing.post_id == "cindy_workday" for existing in photogram_posts):
+            photogram_posts.append(post)
+
+        return created

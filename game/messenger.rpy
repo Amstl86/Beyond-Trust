@@ -15,6 +15,12 @@ default greg_cindy_unread = False
 default greg_frank_unread = False
 default greg_stan_unread = False
 default greg_cindy_read = False
+default greg_bella_unlocked = False
+default greg_bella_unread = False
+default greg_bella_messages = [
+    {"sender": "Bella", "text": "Привет, Грег! Это Белла, подруга Синди. Она сказала, что ты против, чтобы она пошла на вечеринку. Почему?"},
+    {"sender": "Greg", "text": "Я не говорил, что против, я сказал, что мне не нравится эта идея..."},
+]
 default greg_photogram_prompt_pending = False
 default greg_photogram_prompt_shown = False
 default current_day = 1
@@ -75,6 +81,11 @@ image messenger_frank_avatar = AlphaMask(
 
 image messenger_stan_avatar = AlphaMask(
     "images/sprites/ava_stan.png",
+    "images/other/avatar_circle_mask.png"
+)
+
+image messenger_bella_avatar = AlphaMask(
+    "images/sprites/ava_bella.png",
     "images/other/avatar_circle_mask.png"
 )
 
@@ -248,6 +259,10 @@ screen messenger_chat(messages, contact_name, contact_sender, back_to_inbox=Fals
                                     add "messenger_stan_avatar":
                                         xysize (48, 48)
                                         yalign 0.2
+                                elif contact_sender == "Bella":
+                                    add "messenger_bella_avatar":
+                                        xysize (48, 48)
+                                        yalign 0.2
                                 else:
                                     frame:
                                         xysize (48, 48)
@@ -336,7 +351,7 @@ screen messenger_chat(messages, contact_name, contact_sender, back_to_inbox=Fals
                     action If(
                         back_to_inbox and message_index < len(messages) - 1,
                         SetScreenVariable("message_index", message_index + 1),
-                        Return("inbox") if back_to_inbox else Return()
+                        Return("read") if back_to_inbox else Return()
                     )
 
     if back_to_inbox and last_scrolled_index != message_index:
@@ -351,7 +366,7 @@ screen messenger_chat(messages, contact_name, contact_sender, back_to_inbox=Fals
         If(
             back_to_inbox and message_index < len(messages) - 1,
             SetScreenVariable("message_index", message_index + 1),
-            Return("inbox") if back_to_inbox else Return()
+            Return("read") if back_to_inbox else Return()
         )
     )
     key "K_ESCAPE" action Return("inbox" if back_to_inbox else None)
@@ -369,8 +384,18 @@ screen greg_phone_home_screen():
         ypos 138
 
     imagebutton:
-        idle Transform("images/icons/mf_icon.png", xysize=(62, 62))
-        hover Transform("images/icons/mf_icon.png", xysize=(62, 62))
+        idle Transform(
+            "images/icons/mf_icon_n.png"
+            if photogram_post_unread
+            else "images/icons/mf_icon.png",
+            xysize=(62, 62)
+        )
+        hover Transform(
+            "images/icons/mf_icon_n.png"
+            if photogram_post_unread
+            else "images/icons/mf_icon.png",
+            xysize=(62, 62)
+        )
         focus_mask True
         xpos 844
         ypos 255
@@ -379,13 +404,13 @@ screen greg_phone_home_screen():
     imagebutton:
         idle Transform(
             "images/icons/new_messedge.png"
-            if greg_cindy_unread or greg_frank_unread or greg_stan_unread or photogram_notification_unread
+            if greg_cindy_unread or greg_frank_unread or greg_stan_unread
             else "images/icons/bubble.png",
             xysize=(62, 62)
         )
         hover Transform(
             "images/icons/new_messedge.png"
-            if greg_cindy_unread or greg_frank_unread or greg_stan_unread or photogram_notification_unread
+            if greg_cindy_unread or greg_frank_unread or greg_stan_unread
             else "images/icons/bubble.png",
             xysize=(62, 62)
         )
@@ -443,6 +468,15 @@ screen greg_messenger_inbox_screen():
             "enabled": greg_cindy_read,
         },
     ]
+
+    if greg_bella_unlocked:
+        $ inbox_chats.append({
+            "id": "Bella",
+            "name": "Белла",
+            "avatar": "messenger_bella_avatar",
+            "unread": greg_bella_unread,
+            "enabled": True,
+        })
 
     add Solid("#000000")
 
@@ -551,7 +585,7 @@ screen greg_messenger_inbox_screen():
                                 xfill True
                                 ysize 88
                                 padding (10, 8)
-                                sensitive chat["enabled"]
+                                sensitive chat["enabled"] and chat["unread"]
                                 background Solid("#174b3a" if chat["unread"] else "#34383a")
                                 hover_background Solid("#2d805a" if chat["unread"] else "#45494b")
                                 action Return(chat["id"])

@@ -126,7 +126,14 @@ screen greg_photogram_screen():
                         spacing 14
 
                         for post in photogram_posts:
-                            if (post.post_id not in ("nancy_corporate", "cindy_interview") or current_day >= 2) and (page == "explore" or post.profile.followed):
+                            if (
+                                post.post_id not in ("nancy_corporate", "cindy_interview")
+                                or current_day >= 2
+                            ) and (
+                                page == "explore"
+                                or post.profile.followed
+                                or post.post_id == "cindy_workday"
+                            ):
                                 frame:
                                     xfill True
                                     background Solid("#292d2f")
@@ -153,6 +160,11 @@ screen greg_photogram_screen():
                                                 SetScreenVariable("current_post", post),
                                                 SetScreenVariable("post_return_page", page),
                                                 SetScreenVariable("page", "post"),
+                                                If(
+                                                    post.post_id == "nancy_corporate",
+                                                    SetVariable("photogram_post_unread", False),
+                                                    NullAction()
+                                                ),
                                             ]
 
                                             add Transform(post.image, xysize=(460, 470), fit="cover"):
@@ -178,6 +190,11 @@ screen greg_photogram_screen():
                                                     SetScreenVariable("current_post", post),
                                                     SetScreenVariable("post_return_page", page),
                                                     SetScreenVariable("page", "post"),
+                                                    If(
+                                                        post.post_id == "nancy_corporate",
+                                                        SetVariable("photogram_post_unread", False),
+                                                        NullAction()
+                                                    ),
                                                 ]
 
                                         text post.caption:
@@ -214,7 +231,7 @@ screen greg_photogram_screen():
                                     size 25
                                     color "#ffffff"
 
-                                text "[len([post for post in photogram_posts if post.profile == current_profile and (post.post_id != 'cindy_interview' or current_day >= 2)])] публикации":
+                                text "[len([post for post in photogram_posts if post.profile == current_profile and (post.post_id not in ('cindy_interview', 'cindy_workday') or (post.post_id == 'cindy_interview' and current_day >= 2) or (post.post_id == 'cindy_workday' and current_day >= 3))])] публикации":
                                     size 17
                                     color "#c5c5c5"
 
@@ -231,7 +248,11 @@ screen greg_photogram_screen():
                             color "#d7d7d7"
 
                         for post in photogram_posts:
-                            if post.profile == current_profile and (post.post_id not in ("nancy_corporate", "cindy_interview") or current_day >= 2):
+                            if post.profile == current_profile and (
+                                post.post_id not in ("nancy_corporate", "cindy_interview", "cindy_workday")
+                                or (post.post_id == "cindy_interview" and current_day >= 2)
+                                or (post.post_id == "cindy_workday" and current_day >= 3)
+                            ):
                                 button:
                                     xfill True
                                     background Solid("#292d2f")
@@ -241,6 +262,11 @@ screen greg_photogram_screen():
                                         SetScreenVariable("current_post", post),
                                         SetScreenVariable("post_return_page", "profile"),
                                         SetScreenVariable("page", "post"),
+                                        If(
+                                            post.post_id == "nancy_corporate",
+                                            SetVariable("photogram_post_unread", False),
+                                            NullAction()
+                                        ),
                                     ]
 
                                     hbox:
@@ -278,12 +304,31 @@ screen greg_photogram_screen():
                                 SetScreenVariable("current_post", photogram_nancy_posts[0]),
                                 SetScreenVariable("post_return_page", "notifications"),
                                 SetScreenVariable("page", "post"),
+                                SetVariable("photogram_post_unread", False),
                             ]
 
                             text "[photogram_nancy_profile.name] опубликовала новую фотографию":
                                 size 18
                                 color "#ffffff"
                                 xmaximum 470
+
+                        if current_day >= 3:
+                            button:
+                                xfill True
+                                background Solid("#292d2f")
+                                hover_background Solid("#45494b")
+                                padding (12, 12)
+                                action [
+                                    SetScreenVariable("current_post", next(post for post in photogram_posts if post.post_id == "cindy_workday")),
+                                    SetScreenVariable("post_return_page", "notifications"),
+                                    SetScreenVariable("page", "post"),
+                                    SetVariable("photogram_post_unread", False),
+                                ]
+
+                                text "[photogram_cindy_profile.name] опубликовала новую фотографию":
+                                    size 18
+                                    color "#ffffff"
+                                    xmaximum 470
                     else:
                         text "Пока нет новых уведомлений.":
                             size 18

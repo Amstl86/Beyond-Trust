@@ -416,6 +416,11 @@ label greg_phone_home:
     elif _return == "end_day":
         jump greg_end_day
     elif _return == "photogram":
+        if current_day >= 3:
+            $ cindy_workday_post_created = ensure_photogram_cindy_workday_post()
+            if cindy_workday_post_created:
+                $ photogram_notification_unread = True
+                $ photogram_post_unread = True
         call screen greg_photogram_screen
         jump greg_phone_home
     elif _return == "close":
@@ -442,6 +447,7 @@ label greg_end_day:
 
     if current_day == 2:
         $ photogram_notification_unread = True
+        $ photogram_post_unread = True
 
         if not any(message.get("text") == "Доброе утро, милый! Я не стала тебя будить, ты так крепко спал))" for message in greg_cindy_messages):
             $ greg_cindy_messages.extend([
@@ -544,6 +550,11 @@ label greg_end_day:
         ]
         $ greg_cindy_unread = True
 
+        $ ensure_photogram_cindy_workday_post()
+
+        $ photogram_notification_unread = True
+        $ photogram_post_unread = True
+
     $ current_weekday = weekday_names[(current_day - 1) % 7]
     scene next_day with fade
     Grage "Сегодня [current_weekday]."
@@ -555,28 +566,46 @@ label greg_messenger_inbox:
 
     if _return == "home":
         jump greg_phone_home
-    elif _return == "Cindy":
-        $ greg_cindy_unread = False
+    elif _return == "Cindy" and greg_cindy_unread:
         call screen messenger_chat(greg_cindy_messages, "Синди", "Cindy", True)
+        if _return == "read":
+            $ greg_cindy_unread = False
+            if current_day == 3:
+                $ greg_bella_unlocked = True
+                $ greg_bella_unread = True
         $ greg_cindy_read = True
         if isinstance(_return, tuple) and _return[0] == "show_wife_look":
             $ image_message_index = _return[1]
             call screen wife_look_viewer
             call screen messenger_chat(greg_cindy_messages, "Синди", "Cindy", True, image_message_index)
+            if _return == "read":
+                $ greg_cindy_unread = False
+                if current_day == 3:
+                    $ greg_bella_unlocked = True
+                    $ greg_bella_unread = True
         jump greg_messenger_inbox
-    elif _return == "Frank":
-        $ greg_frank_unread = False
+    elif _return == "Frank" and greg_frank_unread:
         call screen messenger_chat(greg_frank_messages, "Френк", "Frank", True)
+        if _return == "read":
+            $ greg_frank_unread = False
         if isinstance(_return, tuple) and _return[0] == "show_nansy_look":
             $ image_message_index = _return[1]
             call screen nansy_look_viewer
             call screen messenger_chat(greg_frank_messages, "Френк", "Frank", True, image_message_index)
+            if _return == "read":
+                $ greg_frank_unread = False
         if current_day == 2 and not greg_photogram_prompt_shown:
             $ greg_photogram_prompt_pending = True
         jump greg_messenger_inbox
-    elif _return == "Stan" and greg_cindy_read:
-        $ greg_stan_unread = False
+    elif _return == "Stan" and greg_stan_unread and greg_cindy_read:
         call screen messenger_chat(greg_stan_messages, "Стэн", "Stan", True)
+        if _return == "read":
+            $ greg_stan_unread = False
+        jump greg_messenger_inbox
+    elif _return == "Bella" and greg_bella_unread:
+        call screen messenger_chat(greg_bella_messages, "Белла", "Bella", True)
+        if _return == "read":
+            $ greg_bella_unread = False
         jump greg_messenger_inbox
     else:
         jump greg_messenger_inbox

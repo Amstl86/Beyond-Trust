@@ -1,4 +1,5 @@
 default photogram_notification_unread = False
+default photogram_post_unread = False
 
 default photogram_nancy_profile = PhotogramProfile(
     "Нэнси",
