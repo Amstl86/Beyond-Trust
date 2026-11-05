@@ -29,7 +29,28 @@ default photogram_cindy_posts = [
         "images/wife/posts/post_1.jpg",
         "Иду на собеседование, как думаете, возьмут? 😛",
         86,
-        []
+        [
+            PhotogramComment(
+                random_photogram_comment_author(),
+                "Я бы тебя принял!",
+                photogram_cindy_profile.name
+            ),
+            PhotogramComment(
+                random_photogram_comment_author(),
+                "У тебя хорошие аргументы))",
+                photogram_cindy_profile.name
+            ),
+            PhotogramComment(
+                random_photogram_comment_author(),
+                "Детка, надеюсь ты проглатываешь...",
+                photogram_cindy_profile.name
+            ),
+            PhotogramComment(
+                random_photogram_comment_author(),
+                "О да ты бы хорошо поработала сидя на моих коленях",
+                photogram_cindy_profile.name
+            ),
+        ]
     ),
 ]
 

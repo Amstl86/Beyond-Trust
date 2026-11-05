@@ -216,12 +216,6 @@ label greg_story_line:
         "text": "Чувак у меня с Синди тоже секс случается не часто, видимо это последствия долгого брака. Не думаю, что это это повод для измены. Я думаю, что тебе нужно поговорить с Нэнси и выяснить, что происходит. Может быть, она просто устала или у неё стресс на работе. Попробуй быть терпеливым и поддерживающим. Я уверен, что вы сможете решить ваши проблемы вместе."
     })
 
-    call screen messenger_chat(chat_messages, "Френк", "Frank")
-
-    $ chat_messages.append({
-        "sender": "Frank",
-        "text": "У нас с Нэнси секса уже небыло несколько месяцев. Я не знаю, что делать. Я пытался поговорить с ней, но она постоянно отмахивается от меня и говорит, что у неё нет настроения. Я подозреваю, что у неё кто-то появился. Я не знаю, что делать. Я люблю её и не хочу терять. Я не хочу, чтобы она ушла от меня."
-    })
 
     call screen messenger_chat(chat_messages, "Френк", "Frank")
 
@@ -267,15 +261,21 @@ label greg_story_line:
         "text": "Ладно... может ты и прав. Просто я не хочу ее потерять, но и куколдом быть тоже не желаю."
     })
 
+    call screen messenger_chat(chat_messages, "Френк", "Frank")
+
     $ chat_messages.append({
         "sender": "Greg",
         "text": "Кем? Куколдом?"
     })
 
+    call screen messenger_chat(chat_messages, "Френк", "Frank")
+
     $ chat_messages.append({
         "sender": "Frank",
         "text": "Ты не знаешь кто такие куколды? Это года жена заводит себе трахаря, а муж смиренно это терпит. Там, конечно, сложнее определение, но суть такова. Ладно мне нужно вернуться к работе, Спасибо, что выслушал."
     })
+
+    call screen messenger_chat(chat_messages, "Френк", "Frank")
 
     $ chat_messages.append({
         "sender": "Greg",
@@ -289,7 +289,6 @@ label greg_story_line:
         zoom 0.58
         xalign 0.5
         yalign 0.5
-    with fade
 
     Grage "Что за куколд? Может погуглить..."
 
@@ -311,6 +310,8 @@ label greg_story_line:
     scene next_day with fade
     Grage "Сегодня [current_weekday]."
     pause 2.0
+
+    
     scene bg_work with fade
 
     Grage "Хорошо. Что происходит? Почему собраны мои вещи?"
@@ -337,6 +338,7 @@ label greg_story_line:
 
     MrJackson "Решение принято на уровне компании. Я не могу изменить его."
 
+    scene black
     call greg_cindy_chat
 
     call greg_phone_scene
@@ -402,6 +404,7 @@ label greg_phone_home:
     if greg_photogram_prompt_pending:
         $ greg_photogram_prompt_pending = False
         $ greg_photogram_prompt_shown = True
+        scene black
         show screen greg_phone_home_screen
         Grage "Я давно не заходил в Photogram. Любопытно, какие фото выложила Нэнси. Может зайти глянуть?"
         hide screen greg_phone_home_screen
@@ -422,12 +425,20 @@ label greg_phone_home:
 
 label greg_end_day:
     $ current_day += 1
-    $ greg_cindy_messages = []
-    $ greg_frank_messages = []
-    $ greg_stan_messages = []
-    $ greg_cindy_unread = False
-    $ greg_frank_unread = False
-    $ greg_stan_unread = False
+
+    if current_day == 3:
+        $ greg_cindy_messages = []
+        $ greg_stan_messages = []
+        $ greg_cindy_unread = False
+        $ greg_stan_unread = False
+        $ greg_cindy_read = False
+    else:
+        $ greg_cindy_messages = []
+        $ greg_frank_messages = []
+        $ greg_stan_messages = []
+        $ greg_cindy_unread = False
+        $ greg_frank_unread = False
+        $ greg_stan_unread = False
 
     if current_day == 2:
         $ photogram_notification_unread = True
@@ -513,6 +524,25 @@ label greg_end_day:
             $ greg_stan_unread = True
 
         $ day_two_messages_sent = True
+
+    elif current_day == 3:
+        $ greg_cindy_messages = [
+            {"sender": "Cindy", "text": "Чем занят, милый?🤗"},
+            {"sender": "Greg", "text": "Разбираю стол от завалов документов🤷"},
+            {"sender": "Cindy", "text": "У меня примерно то же самое🤣"},
+            {"sender": "Cindy", "text": "Но я рада, что вышла на работу. Мне чертовски надоело сидеть дома."},
+            {"sender": "Greg", "text": "Хорошо, что тебе нравится🥰 А я рад, что быстро нашёл работу. Зарплата здесь небольшая, но это лучше, чем ничего. Думаю, вдвоём мы сможем всё оплачивать."},
+            {"sender": "Cindy", "text": "Милый, не переживай, у нас всё получится!💋"},
+            {"sender": "Cindy", "text": "Тем более, предложение Беллы по подработке всё ещё в силе. Кстати, она уже вернулась."},
+            {"sender": "Greg", "text": "Синди, я не думаю, что тебе нужна эта подработка. У меня это временная работа, пока не найду что-то более подходящее."},
+            {"sender": "Cindy", "text": "Дорогой, почему тебе не нравится Белла?🥺 Мы с ней лучшие подруги."},
+            {"sender": "Greg", "text": "Мне она кажется распутной, хоть у неё и есть муж. Дружить с ней — как попасть в плохую компанию: она до добра не доведёт."},
+            {"sender": "Cindy", "text": "Ну ты и бука!👺😂 Кстати, она позвала меня завтра на вечеринку. Могу я пойти?🥹"},
+            {"sender": "Greg", "text": "Мне не нравится эта идея..."},
+            {"sender": "Cindy", "text": "Ну ладно... Мне пора возвращаться к работе, у Рика тоже завал на столе, который мне нужно разгрузить. До вечера!💋"},
+            {"sender": "Greg", "text": "Люблю тебя!"},
+        ]
+        $ greg_cindy_unread = True
 
     $ current_weekday = weekday_names[(current_day - 1) % 7]
     scene next_day with fade

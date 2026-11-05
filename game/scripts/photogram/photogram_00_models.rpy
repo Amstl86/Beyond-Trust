@@ -9,9 +9,10 @@ init python:
 
 
     class PhotogramComment:
-        def __init__(self, author, text):
+        def __init__(self, author, text, liked_by=None):
             self.author = author
             self.text = text
+            self.liked_by = liked_by
 
 
     class PhotogramPost:
@@ -40,3 +41,16 @@ init python:
 
     def toggle_photogram_follow(profile):
         profile.followed = not profile.followed
+
+
+    def random_photogram_comment_author():
+        return renpy.random.choice([
+            "Alex_R",
+            "MaxPower",
+            "Dima_87",
+            "Mike",
+            "HotGuy23",
+            "Roman_K",
+            "NightOwl",
+            "Sergey",
+        ])

@@ -417,6 +417,32 @@ screen greg_messenger_inbox_screen():
 
     modal True
     zorder 200
+    default inbox_unread_only = False
+    default inbox_search = ""
+
+    $ inbox_chats = [
+        {
+            "id": "Cindy",
+            "name": "Синди",
+            "avatar": "messenger_cindy_avatar",
+            "unread": greg_cindy_unread,
+            "enabled": True,
+        },
+        {
+            "id": "Frank",
+            "name": "Френк",
+            "avatar": "messenger_frank_avatar",
+            "unread": greg_frank_unread,
+            "enabled": True,
+        },
+        {
+            "id": "Stan",
+            "name": "Стэн",
+            "avatar": "messenger_stan_avatar",
+            "unread": greg_stan_unread,
+            "enabled": greg_cindy_read,
+        },
+    ]
 
     add Solid("#000000")
 
@@ -444,83 +470,124 @@ screen greg_messenger_inbox_screen():
                     color "#ffffff"
                     yalign 0.5
 
-            vbox:
+            hbox:
                 xfill True
-                yfill False
-                spacing 0
+                ysize 54
+                spacing 8
 
-                button:
+                textbutton "Все":
+                    xsize 110
+                    yfill True
+                    text_size 20
+                    text_color "#ffffff"
+                    background Solid("#216b4a" if not inbox_unread_only else "#45494b")
+                    hover_background Solid("#2d805a" if not inbox_unread_only else "#565b5d")
+                    action SetScreenVariable("inbox_unread_only", False)
+
+                textbutton "Непрочитанные":
+                    xsize 190
+                    yfill True
+                    text_size 18
+                    text_color "#ffffff"
+                    background Solid("#216b4a" if inbox_unread_only else "#45494b")
+                    hover_background Solid("#2d805a" if inbox_unread_only else "#565b5d")
+                    action SetScreenVariable("inbox_unread_only", True)
+
+                null width 1 xfill True
+
+            frame:
+                xfill True
+                ysize 58
+                background Solid("#45494b")
+                padding (14, 8)
+
+                hbox:
                     xfill True
-                    ysize 64
-                    background Solid("#216b4a" if greg_cindy_unread else "#45494b")
-                    hover_background Solid("#2d805a" if greg_cindy_unread else "#565b5d")
-                    action Return("Cindy")
+                    yfill True
+                    spacing 10
 
-                    hbox:
-                        xfill True
-                        spacing 18
+                    text "Поиск:":
+                        size 18
+                        color "#b8b8b8"
                         yalign 0.5
 
-                        add "messenger_cindy_avatar":
-                            xysize (64, 64)
-                            yalign 0.5
-
-                        vbox:
-                            yalign 0.5
-                            text "Синди":
-                                size 28
-                                color "#ffffff"
-
-                button:
-                    xfill True
-                    ysize 64
-                    background Solid("#216b4a" if greg_frank_unread else "#45494b")
-                    hover_background Solid("#2d805a" if greg_frank_unread else "#565b5d")
-                    action Return("Frank")
-
-                    hbox:
+                    input:
+                        value ScreenVariableInputValue("inbox_search")
+                        length 40
+                        size 20
+                        color "#ffffff"
+                        idle_color "#b8b8b8"
+                        copypaste True
                         xfill True
-                        spacing 18
-                        yalign 0.5
 
-                        add "messenger_frank_avatar":
-                            xysize (64, 64)
-                            yalign 0.5
+            viewport:
+                xfill True
+                yfill True
+                mousewheel True
+                draggable True
+                pagekeys True
+                scrollbars "vertical"
 
-                        vbox:
-                            yalign 0.5
-                            text "Френк":
-                                size 28
-                                color "#ffffff"
-
-                button:
+                vbox:
                     xfill True
-                    ysize 64
-                    sensitive greg_cindy_read
-                    background Solid("#216b4a" if greg_stan_unread and greg_cindy_read else "#45494b")
-                    hover_background Solid("#2d805a" if greg_stan_unread and greg_cindy_read else "#565b5d")
-                    action Return("Stan")
+                    spacing 2
 
-                    hbox:
-                        xfill True
-                        spacing 18
-                        yalign 0.5
+                    $ visible_chat_count = 0
 
-                        add "messenger_stan_avatar":
-                            xysize (64, 64)
-                            yalign 0.5
+                    for chat in inbox_chats:
+                        $ matches_search = (
+                            not inbox_search
+                            or inbox_search.lower() in chat["name"].lower()
+                        )
+                        $ matches_filter = (
+                            not inbox_unread_only
+                            or (chat["unread"] and chat["enabled"])
+                        )
 
-                        vbox:
-                            yalign 0.5
-                            text "Стэн":
-                                size 28
-                                color "#ffffff"
-                            if not greg_cindy_read:
-                                text "Сначала прочитайте чат Синди":
-                                    size 12
-                                    color "#b8b8b8"
+                        if matches_search and matches_filter:
+                            $ visible_chat_count += 1
 
-            null height 1 yfill True
+                            button:
+                                xfill True
+                                ysize 88
+                                padding (10, 8)
+                                sensitive chat["enabled"]
+                                background Solid("#174b3a" if chat["unread"] else "#34383a")
+                                hover_background Solid("#2d805a" if chat["unread"] else "#45494b")
+                                action Return(chat["id"])
+
+                                hbox:
+                                    xfill True
+                                    yfill True
+                                    spacing 14
+
+                                    add chat["avatar"]:
+                                        xysize (60, 60)
+                                        yalign 0.5
+
+                                    vbox:
+                                        xfill True
+                                        yalign 0.5
+
+                                        hbox:
+                                            xfill True
+                                            text chat["name"]:
+                                                size 25
+                                                color "#ffffff"
+
+                                            null width 1 xfill True
+
+                                            if chat["unread"] and chat["enabled"]:
+                                                text "НОВОЕ":
+                                                    size 13
+                                                    color "#77e69b"
+
+                    if visible_chat_count == 0:
+                        text "Чаты не найдены":
+                            xalign 0.5
+                            yoffset 24
+                            size 20
+                            color "#b8b8b8"
 
             frame:
                 xfill True

@@ -340,10 +340,18 @@ screen greg_photogram_screen():
                                 background Solid("#292d2f")
                                 padding (12, 8)
 
-                                text "[comment.author]: [comment.text]":
-                                    size 17
-                                    color "#e5e5e5"
-                                    xmaximum 460
+                                vbox:
+                                    spacing 5
+
+                                    text "[comment.author]: [comment.text]":
+                                        size 17
+                                        color "#e5e5e5"
+                                        xmaximum 460
+
+                                    if comment.liked_by:
+                                        text "♥ [comment.liked_by]":
+                                            size 14
+                                            color "#f0718b"
 
             elif page == "story" and current_story:
                 vbox:

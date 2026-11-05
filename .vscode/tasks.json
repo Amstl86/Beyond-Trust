@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Ren'Py: Open Beyond Trust",
+            "type": "process",
+            "command": "G:\\renpy-8.5.3-sdk\\renpy.exe",
+            "args": [
+                "${workspaceFolder}"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
