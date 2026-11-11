@@ -17,10 +17,32 @@ default greg_stan_unread = False
 default greg_cindy_read = False
 default greg_bella_unlocked = False
 default greg_bella_unread = False
-default greg_bella_messages = [
+default greg_cindy_party_chat_stage = 0
+define greg_bella_story = [
     {"sender": "Bella", "text": "Привет, Грег! Это Белла, подруга Синди. Она сказала, что ты против, чтобы она пошла на вечеринку. Почему?"},
     {"sender": "Greg", "text": "Я не говорил, что против, я сказал, что мне не нравится эта идея..."},
+    {"sender": "Bella", "text": "Так значит, Синди может пойти со мной?"},
+    {"sender": "Greg", "text": "Я не тиран, чтобы запрещать ей что-то делать."},
+    {"sender": "Bella", "text": "О, Грег, ты просто душка!"},
+    {"sender": "Bella", "text": "Вот это тебе моя благодарность😜"},
+    {"sender": "Bella", "text": "bella_m1.jpg", "image_link": True, "image_action": "show_bella_m1"},
+    {"sender": "Greg", "text": "Белла, вот из-за такого твоего поведения, я и против того, чтобы Синди пошла с тобой."},
+    {"sender": "Greg", "text": "Что скажет твой муж если узнает что ты шлешь такие фото другому мужчине?"},
+    {"sender": "Bella", "text": "Мой муж совсем не против, он разрешает мне присылать и другие фото🤫"},
+    {"sender": "Bella", "text": "bella_m2.jpg", "image_link": True, "image_action": "show_bella_m2"},
+    {"sender": "Bella", "text": "Что скажешь, Грег? Нравится?😄"},
+    {"sender": "Greg", "text": "Врать не буду, выглядишь шикарно, но Белла, не присылай, пожалуйста, мне такие фото."},
+    {"sender": "Bella", "text": "Ты засмущался?🫣"},
+    {"sender": "Greg", "text": "Белла, перестань, это правда не понравится ни твоему мужу, ни моей жене."},
+    {"sender": "Bella", "text": "За моего мужа не беспокойся, он дает мне полную свободу, я могу трахать кого захочу."},
+    {"sender": "Bella", "text": "И он счастлив, получает удовольствие. Тебе стоит тоже дать свободу Синди, тогда сам поймешь, что счастливая жена — это счастливая жизнь😂"},
+    {"sender": "Greg", "text": "Я тебе не верю! Синди и так счастлива."},
+    {"sender": "Bella", "text": "Ну мне она говорила другое... Особенно в плане секса, говорит, ты не можешь показать ей звезды в небе, если ты понимаешь, о чем я😂"},
+    {"sender": "Bella", "text": "Да и... как же она говорила... «солдатик» твой, не большого ранга😂"},
+    {"sender": "Greg", "text": "Ты лжешь! Слушай, мне надоел этот разговор. Я не запрещаю идти Синди на вечеринку, и я ей полностью доверяю, она уже взрослая, а ты так и не повзрослела. Пока, Белла."},
+    {"sender": "Bella", "text": "Ну хорошо, думай как хочешь... Я пригляжу за Синди😂"},
 ]
+default greg_bella_messages = [dict(message) for message in greg_bella_story]
 default greg_photogram_prompt_pending = False
 default greg_photogram_prompt_shown = False
 default current_day = 1
@@ -112,6 +134,50 @@ screen wife_look_viewer():
     imagebutton:
         idle "images/wife/wife_look.jpg"
         hover "images/wife/wife_look.jpg"
+        action Return()
+        xalign 0.5
+        yalign 0.5
+
+
+screen bella_m1_viewer():
+
+    modal True
+
+    add Solid("#000000")
+
+    imagebutton:
+        idle Transform(
+            "images/bella/bella_m1.jpg",
+            xysize=(config.screen_width, config.screen_height),
+            fit="contain"
+        )
+        hover Transform(
+            "images/bella/bella_m1.jpg",
+            xysize=(config.screen_width, config.screen_height),
+            fit="contain"
+        )
+        action Return()
+        xalign 0.5
+        yalign 0.5
+
+
+screen bella_m2_viewer():
+
+    modal True
+
+    add Solid("#000000")
+
+    imagebutton:
+        idle Transform(
+            "images/bella/bella_m2.jpg",
+            xysize=(config.screen_width, config.screen_height),
+            fit="contain"
+        )
+        hover Transform(
+            "images/bella/bella_m2.jpg",
+            xysize=(config.screen_width, config.screen_height),
+            fit="contain"
+        )
         action Return()
         xalign 0.5
         yalign 0.5

@@ -3,6 +3,7 @@
 # Определение персонажей игры.
 define Grage = Character('Грег', color="#c8ffc8")
 define Cindy = Character('Синди', color="#dcaa21")
+define Bella = Character('Белла', color="#dcaa21")
 define MrJackson = Character('Мистер Джексон', color="#b7d7ff")
 define weekday_names = (
     "понедельник",
@@ -29,6 +30,12 @@ image one_hour_letter = "images/other/one_hour_letter.png"
 image next_day = "images/other/next_day.png"
 image dismissal_office = "images/office_dismissal.png"
 image mr_jackson = "images/sprites/mr_jackson.png"
+image bella_party_1 = "images/sprites/bella_party_1.png"
+image first_party = Transform(
+    "images/bg/first_party.jpg",
+    xysize=(config.screen_width, config.screen_height),
+    fit="contain",
+)
 
 screen one_hour_later_wait():
     modal True
@@ -565,12 +572,27 @@ label greg_messenger_inbox:
     call screen greg_messenger_inbox_screen
 
     if _return == "home":
+        if greg_cindy_party_chat_stage == 4:
+            $ greg_cindy_party_chat_stage = 5
+            scene black
+            centered "23:25"
+            scene first_party with fade
+            Grage "Здесь столько народа... как мне найти Синди? Черт... она не берет трубку..."
+            Grage "Никого не знаю здесь... хотя... это же..."
+            show bella_party_1:
+                zoom 0.3
+                xalign 0.88
+                yalign 1.0
+            Bella "О, Грег... Приехал испортить нам вечеринку?"
+            Grage "Привет, Белла. Я приехал за Синди."
+            Bella "Так и знала, что ты не дашь ей как следует повеселиться!"
+            Grage "Она сама попросила ее забрать! Я вовсе не против веселья, я не сноб и не душнила, как ты могла подумать."
         jump greg_phone_home
     elif _return == "Cindy" and greg_cindy_unread:
         call screen messenger_chat(greg_cindy_messages, "Синди", "Cindy", True)
         if _return == "read":
             $ greg_cindy_unread = False
-            if current_day == 3:
+            if current_day == 3 and not greg_bella_unlocked:
                 $ greg_bella_unlocked = True
                 $ greg_bella_unread = True
         $ greg_cindy_read = True
@@ -580,9 +602,36 @@ label greg_messenger_inbox:
             call screen messenger_chat(greg_cindy_messages, "Синди", "Cindy", True, image_message_index)
             if _return == "read":
                 $ greg_cindy_unread = False
-                if current_day == 3:
+                if current_day == 3 and not greg_bella_unlocked:
                     $ greg_bella_unlocked = True
                     $ greg_bella_unread = True
+        if _return == "read" and current_day == 3:
+            if greg_cindy_party_chat_stage == 1:
+                scene black
+                centered "Вечер 22:15"
+                $ greg_cindy_messages = [
+                    {"sender": "Greg", "text": "Милая, во сколько тебя ждать дома?"},
+                    {"sender": "Greg", "text": "Синди, у тебя всё в порядке?"},
+                    {"sender": "Greg", "text": "Милая, ты не берёшь трубку и не отвечаешь на сообщения, я начинаю волноваться..."},
+                ]
+                $ greg_cindy_party_chat_stage = 2
+                $ greg_cindy_unread = True
+            elif greg_cindy_party_chat_stage == 2:
+                scene black
+                centered "22:47"
+                $ greg_cindy_messages = [
+                    {"sender": "Cindy", "text": "Прости, милый, я танцевала и не слышала звонки. Я немного перепила, ты можешь приехать забрать меня?"},
+                    {"sender": "Greg", "text": "Хорошо, я выезжаю."},
+                    {"sender": "Cindy", "text": "Через сколько ты будешь здесь?"},
+                    {"sender": "Greg", "text": "Думаю, минут через 20."},
+                    {"sender": "Cindy", "text": "Отлично! Думаю, этого достаточно."},
+                    {"sender": "Greg", "text": "Достаточно для чего?"},
+                    {"sender": "Cindy", "text": "Потанцевать, конечно же, и пропустить ещё бокальчик😜"},
+                ]
+                $ greg_cindy_party_chat_stage = 3
+                $ greg_cindy_unread = True
+            elif greg_cindy_party_chat_stage == 3:
+                $ greg_cindy_party_chat_stage = 4
         jump greg_messenger_inbox
     elif _return == "Frank" and greg_frank_unread:
         call screen messenger_chat(greg_frank_messages, "Френк", "Frank", True)
@@ -603,9 +652,26 @@ label greg_messenger_inbox:
             $ greg_stan_unread = False
         jump greg_messenger_inbox
     elif _return == "Bella" and greg_bella_unread:
+        $ greg_bella_messages = [dict(message) for message in greg_bella_story]
         call screen messenger_chat(greg_bella_messages, "Белла", "Bella", True)
         if _return == "read":
             $ greg_bella_unread = False
+        elif isinstance(_return, tuple) and _return[0] in ("show_bella_m1", "show_bella_m2"):
+            $ image_message_index = _return[1]
+            if _return[0] == "show_bella_m2":
+                call screen bella_m2_viewer
+            else:
+                call screen bella_m1_viewer
+            call screen messenger_chat(greg_bella_messages, "Белла", "Bella", True, image_message_index)
+            if _return == "read":
+                $ greg_bella_unread = False
+        if not greg_bella_unread and greg_cindy_party_chat_stage == 0:
+            $ greg_cindy_messages = [
+                {"sender": "Greg", "text": "Милая, прости, я по-прежнему не доверяю Белле и она мне не нравится. Но я не запрещаю тебе идти на вечеринку. Тебе нужно развеяться."},
+                {"sender": "Cindy", "text": "Дорогой, спасибо, я знала, что ты у меня рассудительный и понимаешь, что я засиделась дома💋"},
+            ]
+            $ greg_cindy_party_chat_stage = 1
+            $ greg_cindy_unread = True
         jump greg_messenger_inbox
     else:
         jump greg_messenger_inbox
@@ -613,4 +679,3 @@ label greg_messenger_inbox:
 label cindy_story_line:
     return
 
-# TODO: сделать так, чтобы после окончания видео сразу начинался следующий диалог, без необходимости нажимать на экран.

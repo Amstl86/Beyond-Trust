@@ -161,7 +161,7 @@ screen greg_photogram_screen():
                                                 SetScreenVariable("post_return_page", page),
                                                 SetScreenVariable("page", "post"),
                                                 If(
-                                                    post.post_id == "nancy_corporate",
+                                                    post.post_id in ("nancy_corporate", "cindy_workday"),
                                                     SetVariable("photogram_post_unread", False),
                                                     NullAction()
                                                 ),
@@ -191,7 +191,7 @@ screen greg_photogram_screen():
                                                     SetScreenVariable("post_return_page", page),
                                                     SetScreenVariable("page", "post"),
                                                     If(
-                                                        post.post_id == "nancy_corporate",
+                                                        post.post_id in ("nancy_corporate", "cindy_workday"),
                                                         SetVariable("photogram_post_unread", False),
                                                         NullAction()
                                                     ),
@@ -263,7 +263,7 @@ screen greg_photogram_screen():
                                         SetScreenVariable("post_return_page", "profile"),
                                         SetScreenVariable("page", "post"),
                                         If(
-                                            post.post_id == "nancy_corporate",
+                                            post.post_id in ("nancy_corporate", "cindy_workday"),
                                             SetVariable("photogram_post_unread", False),
                                             NullAction()
                                         ),
