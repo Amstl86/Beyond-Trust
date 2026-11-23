@@ -18,6 +18,7 @@ default greg_cindy_read = False
 default greg_bella_unlocked = False
 default greg_bella_unread = False
 default greg_cindy_party_chat_stage = 0
+default greg_bella_party_choice = None
 define greg_bella_story = [
     {"sender": "Bella", "text": "Привет, Грег! Это Белла, подруга Синди. Она сказала, что ты против, чтобы она пошла на вечеринку. Почему?"},
     {"sender": "Greg", "text": "Я не говорил, что против, я сказал, что мне не нравится эта идея..."},

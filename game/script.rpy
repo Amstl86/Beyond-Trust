@@ -31,6 +31,8 @@ image next_day = "images/other/next_day.png"
 image dismissal_office = "images/office_dismissal.png"
 image mr_jackson = "images/sprites/mr_jackson.png"
 image bella_party_1 = "images/sprites/bella_party_1.png"
+image bella_party_2 = "images/sprites/bella_party_2.png"
+image bg room_with_bella = "images/bg/room_with _bells.jpg"
 image first_party = Transform(
     "images/bg/first_party.jpg",
     xysize=(config.screen_width, config.screen_height),
@@ -579,7 +581,7 @@ label greg_messenger_inbox:
             scene first_party with fade
             Grage "Здесь столько народа... как мне найти Синди? Черт... она не берет трубку..."
             Grage "Никого не знаю здесь... хотя... это же..."
-            show bella_party_1:
+            show bella_party_1 with dissolve:
                 zoom 0.3
                 xalign 0.88
                 yalign 1.0
@@ -587,6 +589,80 @@ label greg_messenger_inbox:
             Grage "Привет, Белла. Я приехал за Синди."
             Bella "Так и знала, что ты не дашь ей как следует повеселиться!"
             Grage "Она сама попросила ее забрать! Я вовсе не против веселья, я не сноб и не душнила, как ты могла подумать."
+            Bella "Не беспокойся, Синди где-то тут, может, в туалет вышла... Она немного перебрала..."
+            Grage "Ох, наверное, ей нужна помощь..."
+            Bella "Не парься, она справится."
+            hide bella_party_1 with dissolve
+            show bella_party_2 with dissolve:
+                zoom 0.5
+                xalign 0.88
+                yalign 1.0
+            Bella "А как насчёт тебя? Ты не против веселья, но сам-то веселиться умеешь?"
+            Grage "Конечно! Мы с друзьями иногда собираемся в баре..."
+            Bella "Тогда вот, возьми безалкогольный коктейль — ты же за рулём."
+            Grage "Пожалуй, ты права, мне не помешает расслабиться. Я в последнее время на нервах..."
+            Bella "Так значит... тебе понравилось то моё фото?"
+            Grage "Гхм... Да... Я пару раз его пересматривал..."
+            Bella "Ах ты шалунишка! Мне нравится, когда на меня смотрят."
+            Bella "Может, отойдём вон в ту комнату, и ты покажешь, как умеешь веселиться?"
+            menu:
+                "Пойти с Беллой?"
+                "Да":
+                    $ greg_bella_party_choice = "yes"
+                "Нет":
+                    $ greg_bella_party_choice = "no"
+            if greg_bella_party_choice == "yes":
+                scene bg room_with_bella with dissolve
+                show bella_party_2 with dissolve:
+                    zoom 0.5
+                    xalign 0.88
+                    yalign 1.0
+                Bella "Вот тут мы можем поговорить наедине."
+                Bella "Синди говорила, что у вас не часто бывает секс."
+                Grage "Синди с тобой это обсуждает?"
+                Bella "Не волнуйся, я полностью на твоей стороне. Думаю, ты не прочь, чтобы он у вас был чаще. Это она не хочет, так ведь?"
+                Grage "Я ей постоянно предлагаю, но она почти всегда находит какую-то отговорку..."
+                Bella "Ну, у меня сейчас нет отговорок, и у нас есть немного свободного времени. Здесь нас никто не потревожит."
+                Grage "Белла, но Синди где-то здесь... Она моя жена... Я... не могу..."
+                Bella "Ты слишком напряжён, Грег. Милый, тебе нужно расслабиться, и я тебе с этим помогу. Не волнуйся, Синди ничего не узнает — она сейчас занята другими делами."
+                Grage "Другими делами?"
+                Bella "Хватит разговоров! Снимай уже штаны и расслабься!"
+                $ renpy.movie_cutscene("videos/bella_greg.webm")
+                Grage "Белла, это было восхитительно... У меня такого никогда не было."
+                Bella "Рада, что тебе понравилось. Я тоже получила удовольствие, так что, может, мы как-нибудь повторим? Или попробуем что-то новенькое?"
+                Grage "Я даже не знаю... Ты подруга моей жены, но мне так понравилось."
+                Bella "Синди не обязательно знать о нас. Мы будем с тобой друзьями по снятию стресса."
+                Grage "Звучит прекрасно! Я не против, но сейчас мне правда нужно найти Синди."
+                Bella "До встречи, Грег. Я тебе напишу."
+            else:
+                scene first_party with dissolve
+                show bella_party_1 with dissolve:
+                    zoom 0.3
+                    xalign 0.88
+                    yalign 1.0
+                Grage "Нет, я приехал забрать жену и должен её найти."
+                Bella "Ну ты и зануда, Грег. Ищи свою жену, но тебе может не понравиться то, что ты найдёшь."
+                Grage "О чём ты?"
+                Bella "Удачи, Грег."
+                hide bella_party_1 with dissolve
+                Grage "Черт... Белла та еще сучка. Где Синди? Может стоит пройтись по дому и поискать её?"
+                scene bg_room1 with dissolve
+                Grage "Здесь так много комнат, неужели придется заглядывать в каждую?"
+                Grage "Кажется в этой кто-то есть. Сейчас проверю."
+                $ renpy.movie_cutscene("videos/room1.webm")
+                scene bg_room1 with dissolve
+                Grage "Извините, я не хотел вас беспокоить. Я ищу свою жену."
+                Grage "Могли бы запереться... надо признать у парня огромный член, а девушка явно получает удовольствие. Но мне нужно найти Синди."
+                scene bg_room2 with dissolve
+                Grage "Здесь тоже кто-то есть. Сейчас проверю."
+                $ renpy.movie_cutscene("videos/room2.webm")
+                scene bg_room2 with dissolve
+                Grage "Ох, я не ожидал увидеть это... Здесь что все трахаются? Синди, надеюсь на твою благоразумность. Я не хочу, чтобы ты видела это и уж тем более участвовала в этом."
+                Grage "Надо идти дальше искать Синди."
+                scene bg_room3 with dissolve
+                Grage "Здесь тоже кто-то есть. Думаю не стоит их беспокоить, просто прислушаюсь, может пойму что тут происходит."
+
+                
         jump greg_phone_home
     elif _return == "Cindy" and greg_cindy_unread:
         call screen messenger_chat(greg_cindy_messages, "Синди", "Cindy", True)
