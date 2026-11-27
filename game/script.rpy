@@ -661,6 +661,11 @@ label greg_messenger_inbox:
                 Grage "Надо идти дальше искать Синди."
                 scene bg_room3 with dissolve
                 Grage "Здесь тоже кто-то есть. Думаю не стоит их беспокоить, просто прислушаюсь, может пойму что тут происходит."
+                $ renpy.movie_cutscene("videos/room3.webm")
+                Grage "Да, сюда не стоит входить."
+                Grage " - Cинди! Где ты? Это я, Грег! Я приехал забрать тебя домой!"
+                scene first_party with dissolve
+                Grage "Где же она? Я не могу её найти... На телефон не отвечает..."
 
                 
         jump greg_phone_home
